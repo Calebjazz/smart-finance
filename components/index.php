@@ -10,7 +10,7 @@
 <body>
 
   <h1 class="text-3xl font-bold underline text-blue-500">
-    Hello world!
+    Hello!
   </h1>
 
 </body>
