@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="w-full max-w-md">
         <!-- Logo -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-white">
+            <h1 class="text-2xl font-bold text-white">
                 Smart<span class="text-blue-400">Finance</span>
             </h1>
             <p class="text-gray-300 mt-2">Welcome back</p>
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Phone with International -->
+                <!-- Phone International feature -->
                 <div>
                     <label class="block text-white text-sm font-medium mb-2">Phone Number</label>
                     <div class="flex gap-2">

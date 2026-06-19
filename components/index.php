@@ -17,24 +17,26 @@ session_start();
         .animate-pulse {
             animation: blink 1s infinite;
         }
-        .typing-container {
-            min-height: 3.5rem;
-        }
+       .typing-container{
+    display:inline-block;
+    min-width:12ch;
+    min-height:1.1em;
+}
     </style>
 </head>
 
-<body class="bg-slate-950">
+<body class="bg-linear-to-br from-slate-950 via-blue-950 to-slate-900">
 
-//navbar
-<nav class="w-full absolute top-0 left-0 z-50">
+<!-- navbar -->
+<nav class="w-full fixed top-0 left-0 z-50 bg-slate-950/80 backdrop-blur-sm border-b border-slate-800">
 
-    <div class="max-w-7xl mx-auto px-6 py-6">
+    <div class="max-w-7xl mx-auto px-6 py-3">
 
         <div class="flex items-center justify-between">
 
             <!-- Logo -->
             <div>
-                <h1 class="text-4xl font-bold text-white">
+                <h1 class="text-2xl font-bold text-white">
                     Smart<span class="text-blue-400">Finance</span>
                 </h1>
             </div>
@@ -57,9 +59,9 @@ session_start();
 
 </nav>
 
-//hero section
+<!-- hero section -->
 <section
-    class="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center">
+    class="min-h-screen pt-24 bg-linear-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center">
 
     <div class="max-w-7xl mx-auto px-6">
 
@@ -69,17 +71,11 @@ session_start();
 
             <div>
 
-                <span
-                    class="inline-block bg-blue-500/20 text-blue-300 px-5 py-2 rounded-full text-sm">
-
-                    Welcome To Smart Finance
-
-                </span>
 
                 <h1
-                    class="text-white text-6xl md:text-7xl font-bold leading-tight mt-8">
+                    class="text-white text-2xl md:text-7xl font-bold leading-tight mt-8">
 
-                    Where Smart <br>
+                      Smart finance, Where Smart <br>
                     <span id="typing-text" class="text-blue-400 typing-container"></span><span class="animate-pulse">|</span>
 
                 </h1>
@@ -87,7 +83,7 @@ session_start();
                 <p
                     class="text-gray-300 mt-8 max-w-lg text-lg">
 
-                    Track your income, monitor expenses, automate budgeting, 
+                    Track your income, monitor expenses, automated budgeting, 
                     set savings goals, and get AI-powered financial consultations 
                     - all in one powerful platform.
 
@@ -101,16 +97,9 @@ session_start();
                         Start Free Trial
 
                     </a>
+               </div>
 
-                    <button
-                        class="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xl flex items-center justify-center hover:bg-white/20 transition">
-
-                        ▶
-
-                    </button>
-
-                </div>
-
+               
                 <!-- Stats -->
 
                 <div class="flex items-center gap-12 mt-16">
@@ -175,9 +164,9 @@ session_start();
 
             <!-- RIGHT - Dashboard Preview -->
 
-            <div class="relative">
+            <div class="relative self-start pt-14">
 
-                <div class="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-lg rounded-3xl p-8 border border-white/10 shadow-2xl">
+                <div class="bg-linear-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-lg rounded-3xl p-8 border border-white/10 shadow-2xl">
                     
                     <div class="bg-slate-900/80 rounded-2xl p-6 border border-white/10">
                         <div class="flex items-center justify-between mb-6">
@@ -201,7 +190,7 @@ session_start();
                             <p class="text-white text-2xl font-bold">$5,170</p>
                         </div>
                         
-                        <button class="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-xl font-medium hover:opacity-90 transition">
+                        <button class="w-full bg-linear-to-r from-blue-500 to-green-500 text-white py-3 rounded-xl font-medium hover:opacity-90 transition">
                             🤖 Get AI Financial Advice
                         </button>
                     </div>
@@ -216,14 +205,14 @@ session_start();
 
 </section>
 
-//features section
+<!-- features section -->
 <section class="py-24 bg-slate-900">
 
     <div class="max-w-7xl mx-auto px-6">
 
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                Powerful Financial Management Features
+                Our Powerful Financial Management Features
             </h2>
             <p class="text-gray-400 text-lg max-w-2xl mx-auto">
                 Everything you need to take control of your finances and build wealth smarter
@@ -382,8 +371,8 @@ session_start();
 
 </section>
 
-//hworks
-<section class="py-24 bg-gradient-to-b from-slate-900 to-slate-950">
+<!-- How It Works -->
+<section class="py-24 bg-linear-to-b from-slate-900 to-slate-950">
 
     <div class="max-w-7xl mx-auto px-6">
 
@@ -407,7 +396,7 @@ session_start();
             <div class="text-center">
                 <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">2</div>
                 <h3 class="text-xl font-bold text-white mb-3">Connect Accounts</h3>
-                <p class="text-gray-400">Link your bank accounts and income sources securely</p>
+                <p class="text-gray-400">Link your Mobile account and income sources securely</p>
             </div>
 
             <div class="text-center">
@@ -428,7 +417,7 @@ session_start();
 
 </section>
 
-//user testimonies
+<!-- User Testimonies -->
 <section class="py-24 bg-slate-950">
 
     <div class="max-w-7xl mx-auto px-6">
@@ -452,9 +441,11 @@ session_start();
                     "Smart Finance completely changed how I manage my money. The AI recommendations are incredibly accurate and have helped me save 30% more each month."
                 </p>
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">JD</div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">
+                        <img src="assets/images/Viola_Curry.jpg" alt="Viola_Curry" class="w-full h-full rounded-full object-cover">
+                    </div>
                     <div>
-                        <p class="text-white font-medium">John Doe</p>
+                        <p class="text-white font-medium">Viola Curry</p>
                         <p class="text-gray-400 text-sm">Entrepreneur</p>
                     </div>
                 </div>
@@ -465,12 +456,14 @@ session_start();
                     <span class="text-yellow-400">★★★★★</span>
                 </div>
                 <p class="text-gray-300 mb-6">
-                    "The automated budgeting feature is a game-changer. I no longer have to manually track every expense. The AI does it all for me!"
+                    "The automated budgeting feature is a game-changer. I no longer have to manually Budget my money. The AI does it all for me!"
                 </p>
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">SM</div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">
+                        <img src="assets/images/Johnny_Tenfingers.jpg" alt="Johnny_Tenfingers" class="w-full h-full rounded-full object-cover">
+                    </div>
                     <div>
-                        <p class="text-white font-medium">Sarah Miller</p>
+                        <p class="text-white font-medium">Johnny Tenfingers</p>
                         <p class="text-gray-400 text-sm">Marketing Manager</p>
                     </div>
                 </div>
@@ -484,9 +477,11 @@ session_start();
                     "The AI financial consultation feature is amazing. It's like having a personal financial advisor available 24/7. Highly recommended!"
                 </p>
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">MJ</div>
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">
+                        <img src="assets/images/Sasha_Whiteman.jpg" alt="Sasha_Whiteman" class="w-full h-full rounded-full object-cover">
+                    </div>
                     <div>
-                        <p class="text-white font-medium">Mike Johnson</p>
+                        <p class="text-white font-medium">Sasha Whiteman</p>
                         <p class="text-gray-400 text-sm">Software Engineer</p>
                     </div>
                 </div>
@@ -497,10 +492,9 @@ session_start();
     </div>
 
 </section>
->
 
-//cta section
-<section class="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
+<!-- CTA Section -->
+<section class="py-24 bg-linear-to-r from-blue-600 to-green-500">
 
     <div class="max-w-4xl mx-auto px-6 text-center">
 
@@ -525,7 +519,7 @@ session_start();
 
 </section>
 
-//footer
+<!-- Footer -->
 <footer class="bg-slate-950 text-white py-12">
     <div class="max-w-7xl mx-auto px-6">
         <div class="grid md:grid-cols-4 gap-8">
@@ -545,7 +539,7 @@ session_start();
             <div>
                 <h4 class="font-bold mb-4">Features</h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li><a href="#" class="hover:text-blue-400 transition">Budget Planning</a></li>
+                    <li><a href="#" class="hover:text-blue-400 transition"> Automated Budgeting</a></li>
                     <li><a href="#" class="hover:text-blue-400 transition">Financial Reports</a></li>
                     <li><a href="#" class="hover:text-blue-400 transition">AI Consultant</a></li>
                     <li><a href="#" class="hover:text-blue-400 transition">Savings Goals</a></li>
@@ -554,8 +548,8 @@ session_start();
             <div>
                 <h4 class="font-bold mb-4">Contact</h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li>support@smartfinance.com</li>
-                    <li>+1 (555) 123-4567</li>
+                    <li>hello@smartfinance.com</li>
+                    <li>+255629895212</li>
                 </ul>
             </div>
         </div>
@@ -567,7 +561,7 @@ session_start();
 
 <script>
     const typingText = document.getElementById('typing-text');
-    const text = 'Financial Decisions Create Success';
+    const text = 'Financial Decisions Create Success.';
     let index = 0;
     
     function type() {

@@ -44,12 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4">
+<body class="min-h-screen bg-linear-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4">
 
     <div class="w-full max-w-md">
         <!-- Logo -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-white">
+            <h1 class="text-2xl font-bold text-white">
                 Smart<span class="text-blue-400">Finance</span>
             </h1>
             <p class="text-gray-300 mt-2">Create your account</p>
