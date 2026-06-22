@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    // For demo purposes, we'll just set session and redirect
+
     // In production, you would validate and insert into database
     $_SESSION['user_id'] = 1;
     $_SESSION['full_name'] = $full_name;

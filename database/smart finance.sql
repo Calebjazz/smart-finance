@@ -3,7 +3,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 
--- SMART FINANCE MANAGEMENT SYSTEM DATABASE
+-- SMART FINANCE DATABASE
 -- =========================================
 
 -- USER
@@ -15,6 +15,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     role ENUM('user','admin') DEFAULT 'user',
     status ENUM('active','blocked') DEFAULT 'active',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -22,6 +24,7 @@ CREATE TABLE users (
 CREATE TABLE income_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(100) NOT NULL,
+    description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -31,9 +34,9 @@ CREATE TABLE incomes (
     user_id INT NOT NULL,
     category_id INT NOT NULL,
     amount DECIMAL(12,2) NOT NULL,
-    source VARCHAR(150),
+    description TEXT,
+    title VARCHAR(150),
     income_date DATE NOT NULL,
-    note TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id),
@@ -44,7 +47,8 @@ CREATE TABLE incomes (
 CREATE TABLE expense_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
 
 -- EXPENSES

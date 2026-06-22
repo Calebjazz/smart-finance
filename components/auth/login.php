@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $_POST['phone'] ?? '';
     $country_code = $_POST['country_code'] ?? '+255';
     
-    // For demo purposes, we'll just set session and redirect
+    
     // In production, you would validate credentials against database
     $_SESSION['user_id'] = 1;
     $_SESSION['full_name'] = $full_name;
@@ -17,6 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Redirect to dashboard
     header('Location: ../../Dashboard/dashboard.php');
     exit();
+
+    /*validation
+    if($user['role']=='admin'){
+    header("Location: ../admin/dashboard.php");
+}else{
+    header("Location: ../user/dashboard.php");
+}
+    */
 }
 ?>
 <!DOCTYPE html>
