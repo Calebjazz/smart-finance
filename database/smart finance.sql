@@ -179,7 +179,7 @@ CREATE TABLE savings_transactions (
 -- INSERTING DATA INTO TABLES
 --=================================
 
-INSERT INTO user (
+INSERT INTO users (
     full_name,
     email,
     phone,

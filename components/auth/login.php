@@ -1,32 +1,67 @@
 <?php
 session_start();
+require_once '../../config/database.php';
 
-// Handle form submission
+// Ensure $conn is available. If the included config didn't provide it,
+// attempt a fallback local connection. Adjust credentials/db name as needed.
+if (!isset($conn) || !$conn) {
+    $conn = mysqli_connect('localhost', 'root', '', 'smart_finance');
+    if (!$conn) {
+        die('Database connection error: ' . mysqli_connect_error());
+    }
+}
+
+$errors = [];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
-    $full_name = $_POST['full_name'] ?? '';
-    $phone = $_POST['phone'] ?? '';
-    $country_code = $_POST['country_code'] ?? '+255';
-    
-    
-    // In production, you would validate credentials against database
-    $_SESSION['user_id'] = 1;
-    $_SESSION['full_name'] = $full_name;
-    $_SESSION['phone'] = $country_code . $phone;
-    
-    // Redirect to dashboard
-    header('Location: ../../Dashboard/dashboard.php');
-    exit();
 
-    /*validation
-    if($user['role']=='admin'){
-    header("Location: ../admin/dashboard.php");
-}else{
-    header("Location: ../user/dashboard.php");
+    $phone = trim($_POST['phone'] ?? '');
+    $country_code = $_POST['country_code'] ?? '+255';
+
+    // validation
+    if (empty($phone)) {
+        $errors[] = "Phone number is required";
+    } elseif (!preg_match('/^[0-9]{9,15}$/', $phone)) {
+        $errors[] = "Invalid phone number format";
+    }
+
+    if (empty($errors)) {
+
+        $full_phone = $country_code . $phone;
+
+        // MYSQLI QUERY
+        $stmt = mysqli_prepare($conn, "SELECT id, full_name, phone, role FROM users WHERE phone = ?");
+        mysqli_stmt_bind_param($stmt, "s", $full_phone);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $user = mysqli_fetch_assoc($result);
+
+        if ($user) {
+
+            session_regenerate_id(true);
+
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['full_name'] = $user['full_name'];
+            $_SESSION['phone'] = $user['phone'];
+            $_SESSION['role'] = $user['role'];
+
+            // role redirect
+            if ($user['role'] === 'admin') {
+                header("Location: ../../admin/dashboard.php");
+            } else {
+                header("Location: ../../Dashboard/dashboard.php");
+            }
+            exit;
+
+        } else {
+            $errors[] = "Invalid phone number or account does not exist";
+        }
+    }
 }
-    */
-}
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4">
+<body class="min-h-screen bg-linear-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4">
 
     <div class="w-full max-w-md">
         <!-- Logo -->
@@ -169,6 +204,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
     </div>
-
 </body>
 </html>

@@ -1,26 +1,93 @@
 <?php
 session_start();
+$errors = [];
 
-// Handle form submission
+// Ensure correct path resolution for the database config
+require_once __DIR__ . '/../../config/database.php';
+
+// Verify $conn provided by database.php
+if (!isset($conn) || !$conn) {
+    // Stop execution with a clear message to avoid undefined variable usage
+    die('Database connection not found. Please check config/database.php and ensure it defines $conn.');
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
-    $full_name = $_POST['full_name'] ?? '';
-    $email = $_POST['email'] ?? '';
-    $phone = $_POST['phone'] ?? '';
-    $password = $_POST['password'] ?? '';
-    
 
-    // In production, you would validate and insert into database
-    $_SESSION['user_id'] = 1;
-    $_SESSION['full_name'] = $full_name;
-    $_SESSION['email'] = $email;
-    $_SESSION['phone'] = $phone;
-    
-    // Redirect to dashboard
-    header('Location: ../../Dashboard/dashboard.php');
-    exit();
+    // Get input
+    $full_name = trim($_POST['full_name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    // Validation
+    if (empty($full_name)) {
+        $errors[] = "Full name is required";
+    }
+
+    if (empty($email)) {
+        $errors[] = "Email is required";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Invalid email format";
+    }
+
+    if (empty($phone)) {
+        $errors[] = "Phone number is required";
+    } elseif (!preg_match('/^[0-9]{9,15}$/', $phone)) {
+        $errors[] = "Invalid phone number format";
+    }
+
+    if (empty($password)) {
+        $errors[] = "Password is required";
+    } elseif (strlen($password) < 6) {
+        $errors[] = "Password must be at least 6 characters";
+    }
+
+    if (empty($errors)) {
+
+        // 1. Check if user exists (MYSQLi)
+        $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ? OR phone = ?");
+        mysqli_stmt_bind_param($stmt, "ss", $email, $phone);
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_fetch_assoc($result)) {
+            $errors[] = "Email or phone already exists";
+        } else {
+
+            // 2. Hash password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            // 3. Insert user
+            $stmt = mysqli_prepare(
+                $conn,
+                "INSERT INTO users (full_name, email, phone, password) VALUES (?, ?, ?, ?)"
+            );
+
+            mysqli_stmt_bind_param($stmt, "ssss", $full_name, $email, $phone, $hashedPassword);
+            mysqli_stmt_execute($stmt);
+
+            // 4. Get ID
+            $user_id = mysqli_insert_id($conn);
+
+            // 5. Login user
+            session_regenerate_id(true);
+
+            $_SESSION['user_id'] = $user_id;
+            $_SESSION['full_name'] = $full_name;
+            $_SESSION['email'] = $email;
+            $_SESSION['phone'] = $phone;
+            $_SESSION['role'] = 'user';
+
+            // 6. Redirect
+            header("Location: ../../Dashboard/dashboard.php");
+            exit;
+        }
+    }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

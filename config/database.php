@@ -12,8 +12,4 @@ $conn = mysqli_connect( "localhost", "root", "", "financedb" );
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
-
-// if connected
-echo "Connected Successfully";
-
 ?>
