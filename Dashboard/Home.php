@@ -1,6 +1,19 @@
 <?php
 session_start();
+#if (session_status() === PHP_SESSION_NONE) {
+#}
 
+/*// 2. If user is NOT logged in, redirect them to the login page
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// 3. Optional: Prevent caching on dashboard so logging out blocks the back button
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+*/
 // Check if admin is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../components/auth/login.php');
@@ -26,7 +39,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <body class="bg-slate-950 min-h-screen">
 
-//navbar
+<!-- navbar -->
 <nav class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
 
     <div class="max-w-7xl mx-auto px-6 py-4">

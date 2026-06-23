@@ -187,9 +187,9 @@ INSERT INTO users (
     role
 )
 VALUES (
-    'System Administrator',
+    'system admin',
     'admin@smartfinance.com',
-    '0000000000',
+    '0717902752',
     'admin123',
     'admin'
 );

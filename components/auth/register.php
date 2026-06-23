@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $password = $_POST['password'] ?? '';
+    $role = 'user'; // Set default role
 
     // Validation
     if (empty($full_name)) {
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
 
-        // 1. Check if user exists (MYSQLi)
+        //Check if user exists (MYSQLi)
         $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE email = ? OR phone = ?");
         mysqli_stmt_bind_param($stmt, "ss", $email, $phone);
         mysqli_stmt_execute($stmt);
@@ -55,22 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "Email or phone already exists";
         } else {
 
-            // 2. Hash password
+            //Hash password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // 3. Insert user
+            //Insert user
             $stmt = mysqli_prepare(
                 $conn,
-                "INSERT INTO users (full_name, email, phone, password) VALUES (?, ?, ?, ?)"
+                "INSERT INTO users (full_name, email, phone, role, password) VALUES (?, ?, ?, ?, ?)"
             );
 
-            mysqli_stmt_bind_param($stmt, "ssss", $full_name, $email, $phone, $hashedPassword);
+            mysqli_stmt_bind_param($stmt, "sssss", $full_name, $email, $phone, $role, $hashedPassword);
             mysqli_stmt_execute($stmt);
 
-            // 4. Get ID
+            //Get ID
             $user_id = mysqli_insert_id($conn);
 
-            // 5. Login user
+            //Login user
             session_regenerate_id(true);
 
             $_SESSION['user_id'] = $user_id;
@@ -79,8 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['phone'] = $phone;
             $_SESSION['role'] = 'user';
 
-            // 6. Redirect
-            header("Location: ../../Dashboard/dashboard.php");
+            //Redirect
+            header("Location: ../../Dashboard/Home.php");
             exit;
         }
     }
