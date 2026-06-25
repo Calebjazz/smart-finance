@@ -19,7 +19,9 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: ../components/auth/login.php');
     exit();
 }
+include '../Dashboard/financial_button.php';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +39,7 @@ if (!isset($_SESSION['user_id'])) {
     </style>
 </head>
 
-<body class="bg-slate-950 min-h-screen">
+<body class="bg-white min-h-screen">
 
 <!-- navbar -->
 <nav class="w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">

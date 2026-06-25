@@ -1,0 +1,27 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n_smart_finance_container
+    restart: unless-stopped
+
+    ports:
+      - "5678:5678"
+
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - TZ=Africa/Dar_es_Salaam
+
+    volumes:
+      - n8n_storage:/home/node/.n8n
+
+    networks:
+      - smart_finance_network
+
+volumes:
+  n8n_storage:
+
+networks:
+  smart_finance_network:
+    driver: bridge
