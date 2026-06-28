@@ -8,6 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once '../config/database.php';
+require_once '../Dashboard/financial_button.php';
 
 // Fetch user financial data
 $user_id = $_SESSION['user_id'];

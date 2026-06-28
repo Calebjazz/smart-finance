@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 <button
     id="advisorBtn"
     onclick="this.classList.toggle('animate-bounce')"
-    class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full animate-bounce w-16 h-16 shadow-2xl z-50 flex items-center justify-center transition-all duration-300 hover:scale-110"
+    class="fixed bottom-6 right-6 bg-emerald-600 hover:bg-emerald-400 text-white rounded-full animate-bounce w-16 h-16 shadow-2xl z-50 flex items-center justify-center transition-all duration-300 hover:scale-110"
     >
 
 <svg xmlns="http://w3.org" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
