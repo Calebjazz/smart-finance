@@ -24,21 +24,22 @@ $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
     <style>
         :root {
             --primary: #6366f1;
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #475569;
+            --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
+            background-color: #f1f5f9;
+            color: #1e293b;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #f8fafc;
         }
 
         .sidebar {
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            background: var(--sidebar-bg);
         }
 
         .sidebar-item:hover {
@@ -52,8 +53,30 @@ $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
         }
 
         .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode .card {
+            background: #334155;
+            border-color: #475569;
+        }
+
+        .card-title {
+            color: #1e293b;
+        }
+
+        body.dark-mode .card-title {
+            color: #f8fafc;
+        }
+
+        .card-text {
+            color: #64748b;
+        }
+
+        body.dark-mode .card-text {
+            color: #94a3b8;
         }
 
         .gradient-red {
@@ -148,31 +171,31 @@ $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
     <main class="flex-1 ml-64">
         
         <!-- Top Navbar -->
-        <nav class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-700">
+        <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200 transition-colors duration-300">
             <div class="px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <button id="sidebar-toggle" class="text-gray-400 hover:text-white transition">
+                        <button id="sidebar-toggle" class="text-gray-600 hover:text-gray-900 transition">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-wallet text-indigo-400 text-lg"></i>
-                            <span class="text-white font-semibold">Smart Finance</span>
+                            <i class="fas fa-wallet text-indigo-500 text-lg"></i>
+                            <span class="text-gray-900 font-semibold">Smart Finance</span>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <button class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white transition">
-                            <i class="fas fa-moon"></i>
+                        <button id="theme-toggle" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:text-gray-900 transition">
+                            <i class="fas fa-moon" id="theme-icon"></i>
                         </button>
-                        <button class="relative w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white transition">
+                        <button class="relative w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:text-gray-900 transition">
                             <i class="fas fa-bell"></i>
                             <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
                         </button>
-                        <div class="flex items-center gap-3 pl-4 border-l border-slate-700">
+                        <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
                             <div class="text-right hidden md:block">
-                                <p class="text-white font-medium text-sm"><?php echo $user_name; ?></p>
-                                <p class="text-gray-400 text-xs">User</p>
+                                <p class="text-gray-900 font-medium text-sm"><?php echo $user_name; ?></p>
+                                <p class="text-gray-500 text-xs">User</p>
                             </div>
                             <div class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                                 <?php echo strtoupper(substr($user_name, 0, 1)); ?>
@@ -187,8 +210,8 @@ $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
         <div class="p-6">
             
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-white mb-2">Expense Management</h1>
-                <p class="text-gray-400">Track and categorize all your expenses</p>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2 card-title">Expense Management</h1>
+                <p class="text-gray-500 card-text">Track and categorize all your expenses</p>
             </div>
 
             <!-- Add Expense Button -->
@@ -459,6 +482,22 @@ $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
         } else {
             sidebar.style.transform = 'translateX(-100%)';
             mainContent.style.marginLeft = '0';
+        }
+    });
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const body = document.body;
+    
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        } else {
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
         }
     });
 </script>

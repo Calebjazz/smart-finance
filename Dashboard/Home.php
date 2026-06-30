@@ -44,30 +44,64 @@ $total_savings = 5170.00;
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
-        }
-
-        .dark {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #475569;
-        }
-
-        .light {
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
+            --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        .sidebar {
+            background: var(--sidebar-bg);
+            transition: transform 0.3s ease, width 0.3s ease;
+        }
+
+        .sidebar-item {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid #6366f1;
+        }
+
+        .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-left: 3px solid #6366f1;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode .card {
+            background: #334155;
+            border-color: #475569;
+        }
+
+        .card-title {
+            color: #1e293b;
+        }
+
+        body.dark-mode .card-title {
+            color: #f8fafc;
+        }
+
+        .card-text {
+            color: #64748b;
+        }
+
+        body.dark-mode .card-text {
+            color: #94a3b8;
         }
 
         .sidebar {
@@ -139,11 +173,15 @@ $total_savings = 5170.00;
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
+            background: #e2e8f0;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: #1e293b;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
+            background: #94a3b8;
             border-radius: 4px;
         }
 
@@ -153,7 +191,7 @@ $total_savings = 5170.00;
     </style>
 </head>
 
-<body class="dark min-h-screen">
+<body class="min-h-screen">
 
 <div class="flex min-h-screen">
 
@@ -242,18 +280,18 @@ $total_savings = 5170.00;
     <main class="flex-1 ml-64 transition-all duration-300" id="main-content">
         
         <!-- Top Navbar -->
-        <nav class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-700">
+        <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200 transition-colors duration-300">
             <div class="px-6 py-4">
                 <div class="flex items-center justify-between">
                     
                     <!-- Left: Toggle & Logo -->
                     <div class="flex items-center gap-4">
-                        <button id="sidebar-toggle" class="text-gray-400 hover:text-white transition">
+                        <button id="sidebar-toggle" class="text-gray-600 hover:text-gray-900 transition">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
                         <div class="hidden md:flex items-center gap-2">
-                            <i class="fas fa-wallet text-green-400 text-lg"></i>
-                            <span class="text-white font-semibold">Smart <span class="text-blue-400">Finance</span></span>
+                            <i class="fas fa-wallet text-green-500 text-lg"></i>
+                            <span class="text-gray-900 font-semibold">Smart <span class="text-blue-500">Finance</span></span>
                         </div>
                     </div>
 
@@ -261,21 +299,21 @@ $total_savings = 5170.00;
                     <div class="flex items-center gap-4">
                         
                         <!-- Dark/Light Mode Toggle -->
-                        <button id="theme-toggle" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white transition">
+                        <button id="theme-toggle" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:text-gray-900 transition">
                             <i class="fas fa-moon" id="theme-icon"></i>
                         </button>
-
+                        
                         <!-- Notifications -->
-                        <button class="relative w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white transition">
+                        <button class="relative w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:text-gray-900 transition">
                             <i class="fas fa-bell"></i>
                             <span class="notification-badge absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
                         </button>
 
                         <!-- User Profile -->
-                        <div class="flex items-center gap-3 pl-4 border-l border-slate-700">
+                        <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
                             <div class="text-right hidden md:block">
-                                <p class="text-white font-medium text-sm"><?php echo $user_name; ?></p>
-                                <p class="text-gray-400 text-xs">User</p>
+                                <p class="text-gray-900 font-medium text-sm"><?php echo $user_name; ?></p>
+                                <p class="text-gray-500 text-xs">User</p>
                             </div>
                             <div class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                                 <?php echo strtoupper(substr($user_name, 0, 1)); ?>
@@ -291,10 +329,10 @@ $total_savings = 5170.00;
             
             <!-- Welcome Section -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-white mb-2">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2 card-title">
                     Hi, <?php echo $user_name; ?> 
                 </h1>
-                <p class="text-gray-400">Welcome to your Smart Finance Dashboard! Here's your financial overview.</p>
+                <p class="text-gray-600 card-text">Welcome to your Smart Finance Dashboard! Here's your financial overview.</p>
             </div>
 
             <!-- Financial Summary Cards -->
@@ -306,10 +344,10 @@ $total_savings = 5170.00;
                         <div class="w-12 h-12 gradient-blue rounded-xl flex items-center justify-center">
                             <i class="fas fa-wallet text-white text-xl"></i>
                         </div>
-                        <span class="text-green-400 text-sm font-medium">+12.5%</span>
+                        <span class="text-green-500 text-sm font-medium">+12.5%</span>
                     </div>
-                    <p class="text-gray-400 text-sm mb-1">Total Balance</p>
-                    <p class="text-2xl font-bold text-white">$<?php echo number_format($total_balance, 2); ?></p>
+                    <p class="text-gray-600 text-sm mb-1 card-text">Total Balance</p>
+                    <p class="text-2xl font-bold text-gray-900 card-title">$<?php echo number_format($total_balance, 2); ?></p>
                 </div>
 
                 <!-- Total Income -->
@@ -318,10 +356,10 @@ $total_savings = 5170.00;
                         <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center">
                             <i class="fas fa-arrow-trend-up text-white text-xl"></i>
                         </div>
-                        <span class="text-green-400 text-sm font-medium">+8.2%</span>
+                        <span class="text-green-500 text-sm font-medium">+8.2%</span>
                     </div>
-                    <p class="text-gray-400 text-sm mb-1">Total Income</p>
-                    <p class="text-2xl font-bold text-white">$<?php echo number_format($total_income, 2); ?></p>
+                    <p class="text-gray-600 text-sm mb-1 card-text">Total Income</p>
+                    <p class="text-2xl font-bold text-gray-900 card-title">$<?php echo number_format($total_income, 2); ?></p>
                 </div>
 
                 <!-- Total Expenses -->
@@ -330,10 +368,10 @@ $total_savings = 5170.00;
                         <div class="w-12 h-12 gradient-red rounded-xl flex items-center justify-center">
                             <i class="fas fa-arrow-trend-down text-white text-xl"></i>
                         </div>
-                        <span class="text-red-400 text-sm font-medium">-3.1%</span>
+                        <span class="text-red-500 text-sm font-medium">-3.1%</span>
                     </div>
-                    <p class="text-gray-400 text-sm mb-1">Total Expenses</p>
-                    <p class="text-2xl font-bold text-white">$<?php echo number_format($total_expenses, 2); ?></p>
+                    <p class="text-gray-600 text-sm mb-1 card-text">Total Expenses</p>
+                    <p class="text-2xl font-bold text-gray-900 card-title">$<?php echo number_format($total_expenses, 2); ?></p>
                 </div>
 
                 <!-- Total Savings -->
@@ -342,10 +380,10 @@ $total_savings = 5170.00;
                         <div class="w-12 h-12 gradient-purple rounded-xl flex items-center justify-center">
                             <i class="fas fa-piggy-bank text-white text-xl"></i>
                         </div>
-                        <span class="text-green-400 text-sm font-medium">+15.3%</span>
+                        <span class="text-green-500 text-sm font-medium">+15.3%</span>
                     </div>
-                    <p class="text-gray-400 text-sm mb-1">Total Savings</p>
-                    <p class="text-2xl font-bold text-white">$<?php echo number_format($total_savings, 2); ?></p>
+                    <p class="text-gray-600 text-sm mb-1 card-text">Total Savings</p>
+                    <p class="text-2xl font-bold text-gray-900 card-title">$<?php echo number_format($total_savings, 2); ?></p>
                 </div>
             </div>
 
@@ -354,7 +392,7 @@ $total_savings = 5170.00;
                 
                 <!-- Income vs Expenses Line Chart -->
                 <div class="card rounded-2xl p-6">
-                    <h3 class="text-lg font-semibold text-white mb-4">Income vs Expenses</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 card-title">Income vs Expenses</h3>
                     <div class="chart-container">
                         <canvas id="incomeExpenseChart"></canvas>
                     </div>
@@ -362,7 +400,7 @@ $total_savings = 5170.00;
 
                 <!-- Expenses by Category Pie Chart -->
                 <div class="card rounded-2xl p-6">
-                    <h3 class="text-lg font-semibold text-white mb-4">Expenses by Category</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 card-title">Expenses by Category</h3>
                     <div class="chart-container">
                         <canvas id="categoryChart"></canvas>
                     </div>
@@ -374,7 +412,7 @@ $total_savings = 5170.00;
                 
                 <!-- Monthly Spending Bar Chart -->
                 <div class="card rounded-2xl p-6 lg:col-span-2">
-                    <h3 class="text-lg font-semibold text-white mb-4">Monthly Spending</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 card-title">Monthly Spending</h3>
                     <div class="chart-container">
                         <canvas id="monthlySpendingChart"></canvas>
                     </div>
@@ -383,49 +421,49 @@ $total_savings = 5170.00;
                 <!-- Recent Transactions -->
                 <div class="card rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-white">Recent Transactions</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 card-title">Recent Transactions</h3>
                         <a href="transactions.php" class="text-indigo-400 text-sm hover:text-indigo-300">View All</a>
                     </div>
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                                <i class="fas fa-arrow-down text-green-400"></i>
+                                <i class="fas fa-arrow-down text-green-500"></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-white text-sm font-medium">Salary Deposit</p>
-                                <p class="text-gray-400 text-xs">Today</p>
+                                <p class="text-gray-900 text-sm font-medium card-title">Salary Deposit</p>
+                                <p class="text-gray-500 text-xs card-text">Today</p>
                             </div>
-                            <p class="text-green-400 font-medium">+$5,000</p>
+                            <p class="text-green-500 font-medium">+$5,000</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
-                                <i class="fas fa-shopping-cart text-red-400"></i>
+                                <i class="fas fa-shopping-cart text-red-500"></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-white text-sm font-medium">Grocery Shopping</p>
-                                <p class="text-gray-400 text-xs">Yesterday</p>
+                                <p class="text-gray-900 text-sm font-medium card-title">Grocery Shopping</p>
+                                <p class="text-gray-500 text-xs card-text">Yesterday</p>
                             </div>
-                            <p class="text-red-400 font-medium">-$150</p>
+                            <p class="text-red-500 font-medium">-$150</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
-                                <i class="fas fa-bolt text-red-400"></i>
+                                <i class="fas fa-bolt text-red-500"></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-white text-sm font-medium">Electricity Bill</p>
-                                <p class="text-gray-400 text-xs">2 days ago</p>
+                                <p class="text-gray-900 text-sm font-medium card-title">Electricity Bill</p>
+                                <p class="text-gray-500 text-xs card-text">2 days ago</p>
                             </div>
-                            <p class="text-red-400 font-medium">-$85</p>
+                            <p class="text-red-500 font-medium">-$85</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                                <i class="fas fa-hand-holding-usd text-green-400"></i>
+                                <i class="fas fa-hand-holding-usd text-green-500"></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-white text-sm font-medium">Freelance Payment</p>
-                                <p class="text-gray-400 text-xs">3 days ago</p>
+                                <p class="text-gray-900 text-sm font-medium card-title">Freelance Payment</p>
+                                <p class="text-gray-500 text-xs card-text">3 days ago</p>
                             </div>
-                            <p class="text-green-400 font-medium">+$1,200</p>
+                            <p class="text-green-500 font-medium">+$1,200</p>
                         </div>
                     </div>
                 </div>
@@ -434,34 +472,34 @@ $total_savings = 5170.00;
             <!-- Budget Overview (50/30/20 Rule) -->
             <div class="card rounded-2xl p-6 mb-8">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-semibold text-white">Budget Overview (50/30/20 Rule)</h3>
-                    <a href="Budget.php" class="text-indigo-400 text-sm hover:text-indigo-300">Manage Budget</a>
+                    <h3 class="text-lg font-semibold text-gray-900 card-title">Budget Overview (50/30/20 Rule)</h3>
+                    <a href="Budget.php" class="text-indigo-500 text-sm hover:text-indigo-600">Manage Budget</a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-slate-800/50 rounded-xl p-4">
+                    <div class="bg-gray-100 rounded-xl p-4 dark:bg-slate-800/50">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-gray-400 text-sm">Needs (50%)</span>
-                            <span class="text-white font-medium">$4,225</span>
+                            <span class="text-gray-600 text-sm card-text dark:text-gray-400">Needs (50%)</span>
+                            <span class="text-gray-900 font-medium card-title dark:text-white">$4,225</span>
                         </div>
-                        <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700">
                             <div class="bg-blue-500 h-2 rounded-full" style="width: 50%"></div>
                         </div>
                     </div>
-                    <div class="bg-slate-800/50 rounded-xl p-4">
+                    <div class="bg-gray-100 rounded-xl p-4 dark:bg-slate-800/50">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-gray-400 text-sm">Wants (30%)</span>
-                            <span class="text-white font-medium">$2,535</span>
+                            <span class="text-gray-600 text-sm card-text dark:text-gray-400">Wants (30%)</span>
+                            <span class="text-gray-900 font-medium card-title dark:text-white">$2,535</span>
                         </div>
-                        <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700">
                             <div class="bg-purple-500 h-2 rounded-full" style="width: 30%"></div>
                         </div>
                     </div>
-                    <div class="bg-slate-800/50 rounded-xl p-4">
+                    <div class="bg-gray-100 rounded-xl p-4 dark:bg-slate-800/50">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-gray-400 text-sm">Savings (20%)</span>
-                            <span class="text-white font-medium">$1,690</span>
+                            <span class="text-gray-600 text-sm card-text dark:text-gray-400">Savings (20%)</span>
+                            <span class="text-gray-900 font-medium card-title dark:text-white">$1,690</span>
                         </div>
-                        <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700">
                             <div class="bg-green-500 h-2 rounded-full" style="width: 20%"></div>
                         </div>
                     </div>
@@ -470,31 +508,31 @@ $total_savings = 5170.00;
 
             <!-- Mobile Payment Integration Preview -->
             <div class="card rounded-2xl p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Mobile Payment Integration</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 card-title">Mobile Payment Integration</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-slate-800/50 rounded-xl p-4 text-center hover:bg-slate-700/50 transition cursor-pointer">
+                    <div class="bg-gray-100 rounded-xl p-4 text-center hover:bg-gray-200 transition cursor-pointer dark:bg-slate-800/50 dark:hover:bg-slate-700/50">
                         <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-2">
-                            <i class="fas fa-mobile-alt text-green-400 text-xl"></i>
+                            <i class="fas fa-mobile-alt text-green-500 text-xl dark:text-green-400"></i>
                         </div>
-                        <p class="text-white text-sm font-medium">Vodacom M-Pesa</p>
+                        <p class="text-gray-900 text-sm font-medium card-title dark:text-white">Vodacom M-Pesa</p>
                     </div>
-                    <div class="bg-slate-800/50 rounded-xl p-4 text-center hover:bg-slate-700/50 transition cursor-pointer">
+                    <div class="bg-gray-100 rounded-xl p-4 text-center hover:bg-gray-200 transition cursor-pointer dark:bg-slate-800/50 dark:hover:bg-slate-700/50">
                         <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-2">
-                            <i class="fas fa-mobile-alt text-blue-400 text-xl"></i>
+                            <i class="fas fa-mobile-alt text-blue-500 text-xl dark:text-blue-400"></i>
                         </div>
-                        <p class="text-white text-sm font-medium">Airtel Money</p>
+                        <p class="text-gray-900 text-sm font-medium card-title dark:text-white">Airtel Money</p>
                     </div>
-                    <div class="bg-slate-800/50 rounded-xl p-4 text-center hover:bg-slate-700/50 transition cursor-pointer">
+                    <div class="bg-gray-100 rounded-xl p-4 text-center hover:bg-gray-200 transition cursor-pointer dark:bg-slate-800/50 dark:hover:bg-slate-700/50">
                         <div class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center mx-auto mb-2">
-                            <i class="fas fa-mobile-alt text-yellow-400 text-xl"></i>
+                            <i class="fas fa-mobile-alt text-yellow-500 text-xl dark:text-yellow-400"></i>
                         </div>
-                        <p class="text-white text-sm font-medium">Halotel</p>
+                        <p class="text-gray-900 text-sm font-medium card-title dark:text-white">Halotel</p>
                     </div>
-                    <div class="bg-slate-800/50 rounded-xl p-4 text-center hover:bg-slate-700/50 transition cursor-pointer">
+                    <div class="bg-gray-100 rounded-xl p-4 text-center hover:bg-gray-200 transition cursor-pointer dark:bg-slate-800/50 dark:hover:bg-slate-700/50">
                         <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-2">
-                            <i class="fas fa-mobile-alt text-purple-400 text-xl"></i>
+                            <i class="fas fa-mobile-alt text-purple-500 text-xl dark:text-purple-400"></i>
                         </div>
-                        <p class="text-white text-sm font-medium">Yas</p>
+                        <p class="text-gray-900 text-sm font-medium card-title dark:text-white">Yas</p>
                     </div>
                 </div>
             </div>
@@ -525,20 +563,15 @@ $total_savings = 5170.00;
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
     const body = document.body;
-    let isDark = true;
-
+    
     themeToggle.addEventListener('click', () => {
-        isDark = !isDark;
-        if (isDark) {
-            body.classList.remove('light');
-            body.classList.add('dark');
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-        } else {
-            body.classList.remove('dark');
-            body.classList.add('light');
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
             themeIcon.classList.remove('fa-moon');
             themeIcon.classList.add('fa-sun');
+        } else {
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
         }
     });
 

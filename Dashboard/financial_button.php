@@ -31,8 +31,7 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="flex items-center space-x-3">
             <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></div>
             <div>
-                <h2 class="font-bold text-base tracking-wide">SmartFinance Agent</h2>
-                <p class="text-xs text-emerald-100 font-light">Online Financial Consultation</p>
+                <h2 class="font-bold text-base tracking-wide">Financial consultation Agent</h2>
             </div>
         </div>
         <button id="closeAdvisor" class="text-emerald-200 hover:text-white transition-colors text-sm font-semibold">✕</button>
@@ -45,17 +44,14 @@ if (session_status() === PHP_SESSION_NONE) {
         
         <!-- Welcome System Card Message -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 max-w-[85%] mr-auto">
-            <div class="flex items-center space-x-2 text-emerald-700 font-semibold text-sm mb-2">
-                <span>👋 Hello, <?php echo htmlspecialchars($_SESSION['full_name'] ?? 'User'); ?>!</span>
-            </div>
             <p class="text-gray-600 text-sm leading-relaxed">
-                I'm your digital personal finance assistant. I'm trained on your tracking logs. Ask me anything about:
+              Hello!👋 I'm your financial assistant, Ask me anything about:
             </p>
             <ul class="mt-2 space-y-1.5 text-xs text-gray-500 font-medium pl-1">
-                <li class="flex items-center"><span class="mr-2">💼</span> Automatic Budgets (50/30/20)</li>
+                <li class="flex items-center"><span class="mr-2">💼</span> Automatic Budgets</li>
                 <li class="flex items-center"><span class="mr-2">📊</span> Real-time Expense Audits</li>
-                <li class="flex items-center"><span class="mr-2">💰</span> Savings & Debt Allocations</li>
-                <li class="flex items-center"><span class="mr-2">💵</span> Overspending Warning Systems</li>
+                <li class="flex items-center"><span class="mr-2">💰</span> Savings & Goals</li>
+                <li class="flex items-center"><span class="mr-2">💵</span> overspending </li>
             </ul>
         </div>
     </div>
@@ -102,7 +98,7 @@ async function sendMessage() {
     inputField.value = '';
 
     //Append Loading Placeholder
-    const loadingId = appendMessage('Agent is thinking...', 'ai-loading');
+    const loadingId = appendMessage('thinking...', 'ai-loading');
 
     try {
         //POST Request to Docker n8n Webhook
@@ -110,7 +106,8 @@ async function sendMessage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: userText,
-    phpSessionId: '<?php echo session_id(); ?>' })
+             userId: <?php echo $_SESSION['user_id']; ?>,
+            phpSessionId: '<?php echo session_id(); ?>' })
         });
         
         const data = await response.json();
@@ -121,7 +118,8 @@ async function sendMessage() {
         // Append AI Agent Response to UI
         // n8n returns the output text inside the first item's output property
         console.log(data);
-     appendMessage(JSON.stringify(data), "ai");
+     const aiResponse = data.output || "No response.";
+    appendMessage(aiResponse, "ai");
 
     } catch (error) {
         document.getElementById(loadingId).remove();
