@@ -1,446 +1,155 @@
 <?php
-session_start();
+require_once __DIR__ . '/../includes/init.php';
+require_login();
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../components/auth/login.php');
-    exit();
+$user_id = (int) $_SESSION['user_id'];
+$user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
+$message = '';
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    if ($action === 'add') {
+        $title = trim($_POST['title'] ?? '');
+        $category_id = (int) ($_POST['category_id'] ?? 0);
+        $amount = (float) ($_POST['amount'] ?? 0);
+        $description = trim($_POST['description'] ?? '');
+        $income_date = $_POST['income_date'] ?? date('Y-m-d');
+        if ($title && $category_id && $amount > 0) {
+            $stmt = mysqli_prepare($conn, "INSERT INTO incomes (user_id, category_id, amount, description, title, income_date) VALUES (?, ?, ?, ?, ?, ?)");
+            mysqli_stmt_bind_param($stmt, 'iidsss', $user_id, $category_id, $amount, $description, $title, $income_date);
+            if (mysqli_stmt_execute($stmt)) {
+                $message = 'Income added successfully.';
+                create_notification($conn, $user_id, 'Income recorded', format_usd($amount) . ' from ' . $title);
+            } else {
+                $error = 'Failed to add income.';
+            }
+        } else {
+            $error = 'Please fill all required fields.';
+        }
+    } elseif ($action === 'delete') {
+        $id = (int) ($_POST['id'] ?? 0);
+        $stmt = mysqli_prepare($conn, "DELETE FROM incomes WHERE id = ? AND user_id = ?");
+        mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
+        mysqli_stmt_execute($stmt);
+        $message = 'Income deleted.';
+    }
 }
 
-require_once '../config/database.php';
+$incomes = get_user_incomes($conn, $user_id);
+$categories = get_income_categories($conn);
+$total_income = get_total_income($conn, $user_id);
+$month_income = get_month_income($conn, $user_id);
+$active_sources = count(array_unique(array_column($incomes, 'title')));
 
-$user_id = $_SESSION['user_id'];
-$user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
+$page_title = 'Income';
+$active_page = 'income';
+$dash_path = '';
+$user_path = '../user/';
+
+include __DIR__ . '/../includes/head.php';
+include __DIR__ . '/../includes/user_sidebar.php';
+include __DIR__ . '/../includes/user_navbar.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Income - Smart Finance</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-        }
+<div class="p-6">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2 card-title">Income Management</h1>
+        <p class="card-text">Track and manage all your income sources</p>
+    </div>
 
-        body {
-            background-color: #f1f5f9;
-            color: #1e293b;
-            transition: background-color 0.3s, color 0.3s;
-        }
+    <?php if ($message): ?><div class="alert-success rounded-xl p-4 mb-4"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert-error rounded-xl p-4 mb-4"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
-        body.dark-mode {
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
+    <div class="mb-6">
+        <button type="button" onclick="document.getElementById('addIncomeModal').classList.remove('hidden')" class="gradient-green text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition flex items-center gap-2">
+            <i class="fas fa-plus"></i> Add Income
+        </button>
+    </div>
 
-        .sidebar {
-            background: var(--sidebar-bg);
-        }
-
-        .sidebar-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            border-left: 3px solid #6366f1;
-        }
-
-        .sidebar-item.active {
-            background: rgba(99, 102, 241, 0.15);
-            border-left: 3px solid #6366f1;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        body.dark-mode .card {
-            background: #334155;
-            border-color: #475569;
-        }
-
-        .card-title {
-            color: #1e293b;
-        }
-
-        body.dark-mode .card-title {
-            color: #f8fafc;
-        }
-
-        .card-text {
-            color: #64748b;
-        }
-
-        body.dark-mode .card-text {
-            color: #94a3b8;
-        }
-
-        .gradient-green {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-    </style>
-</head>
-
-<body class="min-h-screen">
-
-<div class="flex min-h-screen">
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar fixed left-0 top-0 h-full w-64 z-50 transform translate-x-0">
-        <div class="flex flex-col h-full">
-            <div class="p-6 border-b border-slate-700">
-                <h1 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-wallet text-indigo-400"></i>
-                    Smart<span class="text-indigo-400">Finance</span>
-                </h1>
-            </div>
-
-            <nav class="flex-1 overflow-y-auto py-4">
-                <ul class="space-y-1">
-                    <li>
-                        <a href="Home.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-home w-5"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="Income.php" class="sidebar-item active flex items-center gap-3 px-6 py-3 text-white">
-                            <i class="fas fa-arrow-trend-up w-5 text-green-400"></i>
-                            <span>Income</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="Expenses.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-arrow-trend-down w-5 text-red-400"></i>
-                            <span>Expenses</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="Budget.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-piggy-bank w-5 text-yellow-400"></i>
-                            <span>Budget</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="Saving&Goals.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-bullseye w-5 text-purple-400"></i>
-                            <span>Savings & Goals</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="transactions.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-exchange-alt w-5 text-blue-400"></i>
-                            <span>Transactions</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="Reports.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-chart-pie w-5 text-cyan-400"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="../user/profile.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-user w-5 text-pink-400"></i>
-                            <span>Profile</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="../user/settings.php" class="sidebar-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white">
-                            <i class="fas fa-cog w-5 text-gray-400"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="p-4 border-t border-slate-700">
-                <a href="../components/auth/logout.php" class="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition">
-                    <i class="fas fa-sign-out-alt w-5"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card rounded-2xl p-6">
+            <p class="text-sm card-text">Total Income</p>
+            <p class="text-2xl font-bold card-title"><?php echo format_usd($total_income); ?></p>
         </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 ml-64">
-        
-        <!-- Top Navbar -->
-        <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200 transition-colors duration-300">
-            <div class="px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <button id="sidebar-toggle" class="text-gray-600 hover:text-gray-900 transition">
-                            <i class="fas fa-bars text-xl"></i>
-                        </button>
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-wallet text-indigo-500 text-lg"></i>
-                            <span class="text-gray-900 font-semibold">Smart Finance</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4">
-                        <button id="theme-toggle" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:text-gray-900 transition">
-                            <i class="fas fa-moon" id="theme-icon"></i>
-                        </button>
-                        <button class="relative w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white transition">
-                            <i class="fas fa-bell"></i>
-                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-                        </button>
-                        <div class="flex items-center gap-3 pl-4 border-l border-gray-200">
-                            <div class="text-right hidden md:block">
-                                <p class="text-gray-900 font-medium text-sm"><?php echo $user_name; ?></p>
-                                <p class="text-gray-500 text-xs">User</p>
-                            </div>
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                                <?php echo strtoupper(substr($user_name, 0, 1)); ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Income Content -->
-        <div class="p-6">
-            
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-white mb-2">Income Management</h1>
-                <p class="text-gray-400">Track and manage all your income sources</p>
-            </div>
-
-            <!-- Add Income Button -->
-            <div class="mb-6">
-                <button onclick="document.getElementById('addIncomeModal').classList.remove('hidden')" class="gradient-green text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition flex items-center gap-2">
-                    <i class="fas fa-plus"></i>
-                    Add Income
-                </button>
-            </div>
-
-            <!-- Income Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="card rounded-2xl p-6">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center">
-                            <i class="fas fa-dollar-sign text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-sm">Total Income</p>
-                            <p class="text-2xl font-bold text-white">$8,450.00</p>
-                        </div>
-                    </div>
-                    <p class="text-green-400 text-sm">+12.5% from last month</p>
-                </div>
-
-                <div class="card rounded-2xl p-6">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-briefcase text-blue-400 text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-sm">Active Sources</p>
-                            <p class="text-2xl font-bold text-white">4</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm">Income streams active</p>
-                </div>
-
-                <div class="card rounded-2xl p-6">
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-calendar text-purple-400 text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-sm">This Month</p>
-                            <p class="text-2xl font-bold text-white">$5,000.00</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm">Monthly total</p>
-                </div>
-            </div>
-
-            <!-- Income Sources Table -->
-            <div class="card rounded-2xl p-6">
-                <h3 class="text-lg font-semibold text-white mb-4">Income Sources</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="text-left text-gray-400 text-sm border-b border-slate-700">
-                                <th class="pb-3">Source</th>
-                                <th class="pb-3">Category</th>
-                                <th class="pb-3">Amount</th>
-                                <th class="pb-3">Frequency</th>
-                                <th class="pb-3">Last Received</th>
-                                <th class="pb-3">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-white">
-                            <tr class="border-b border-slate-700/50">
-                                <td class="py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-                                            <i class="fas fa-building text-green-400"></i>
-                                        </div>
-                                        <span>Salary</span>
-                                    </div>
-                                </td>
-                                <td class="py-4"><span class="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">Employment</span></td>
-                                <td class="py-4 font-medium">$5,000.00</td>
-                                <td class="py-4">Monthly</td>
-                                <td class="py-4 text-gray-400">Jun 1, 2026</td>
-                                <td class="py-4">
-                                    <button class="text-gray-400 hover:text-white mr-2"><i class="fas fa-edit"></i></button>
-                                    <button class="text-gray-400 hover:text-red-400"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-slate-700/50">
-                                <td class="py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                                            <i class="fas fa-laptop text-purple-400"></i>
-                                        </div>
-                                        <span>Freelance</span>
-                                    </div>
-                                </td>
-                                <td class="py-4"><span class="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm">Self-Employment</span></td>
-                                <td class="py-4 font-medium">$2,450.00</td>
-                                <td class="py-4">Variable</td>
-                                <td class="py-4 text-gray-400">Jun 15, 2026</td>
-                                <td class="py-4">
-                                    <button class="text-gray-400 hover:text-white mr-2"><i class="fas fa-edit"></i></button>
-                                    <button class="text-gray-400 hover:text-red-400"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-slate-700/50">
-                                <td class="py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                                            <i class="fas fa-chart-line text-yellow-400"></i>
-                                        </div>
-                                        <span>Investments</span>
-                                    </div>
-                                </td>
-                                <td class="py-4"><span class="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm">Investment</span></td>
-                                <td class="py-4 font-medium">$750.00</td>
-                                <td class="py-4">Quarterly</td>
-                                <td class="py-4 text-gray-400">May 30, 2026</td>
-                                <td class="py-4">
-                                    <button class="text-gray-400 hover:text-white mr-2"><i class="fas fa-edit"></i></button>
-                                    <button class="text-gray-400 hover:text-red-400"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
-                                            <i class="fas fa-gift text-cyan-400"></i>
-                                        </div>
-                                        <span>Side Hustle</span>
-                                    </div>
-                                </td>
-                                <td class="py-4"><span class="bg-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full text-sm">Other</span></td>
-                                <td class="py-4 font-medium">$250.00</td>
-                                <td class="py-4">Variable</td>
-                                <td class="py-4 text-gray-400">Jun 10, 2026</td>
-                                <td class="py-4">
-                                    <button class="text-gray-400 hover:text-white mr-2"><i class="fas fa-edit"></i></button>
-                                    <button class="text-gray-400 hover:text-red-400"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+        <div class="card rounded-2xl p-6">
+            <p class="text-sm card-text">Active Sources</p>
+            <p class="text-2xl font-bold card-title"><?php echo $active_sources; ?></p>
         </div>
-    </main>
+        <div class="card rounded-2xl p-6">
+            <p class="text-sm card-text">This Month</p>
+            <p class="text-2xl font-bold card-title"><?php echo format_usd($month_income); ?></p>
+        </div>
+    </div>
+
+    <div class="card rounded-2xl p-6">
+        <h3 class="text-lg font-semibold mb-4 card-title">Income Records</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="text-left text-sm border-b table-head">
+                        <th class="pb-3">Title</th><th class="pb-3">Category</th><th class="pb-3">Amount</th><th class="pb-3">Date</th><th class="pb-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($incomes)): ?>
+                    <tr><td colspan="5" class="py-6 text-center card-text">No income records yet.</td></tr>
+                    <?php else: foreach ($incomes as $row): ?>
+                    <tr class="border-b table-row">
+                        <td class="py-4 card-title"><?php echo htmlspecialchars($row['title']); ?></td>
+                        <td class="py-4"><span class="bg-blue-500/20 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full text-sm"><?php echo htmlspecialchars($row['category_name']); ?></span></td>
+                        <td class="py-4 font-medium text-green-500"><?php echo format_usd((float)$row['amount']); ?></td>
+                        <td class="py-4 card-text"><?php echo date('M j, Y', strtotime($row['income_date'])); ?></td>
+                        <td class="py-4">
+                            <form method="POST" class="inline" onsubmit="return confirm('Delete this income?');">
+                                <input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int)$row['id']; ?>">
+                                <button type="submit" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endforeach; endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<!-- Add Income Modal -->
-<div id="addIncomeModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
-    <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-md mx-4">
+<div id="addIncomeModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="modal-panel rounded-2xl p-6 w-full max-w-md">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-white">Add Income Source</h3>
-            <button onclick="document.getElementById('addIncomeModal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-                <i class="fas fa-times"></i>
-            </button>
+            <h3 class="text-xl font-bold card-title">Add Income</h3>
+            <button type="button" onclick="document.getElementById('addIncomeModal').classList.add('hidden')" class="card-text hover:opacity-70"><i class="fas fa-times"></i></button>
         </div>
-        <form class="space-y-4">
+        <form method="POST" class="space-y-4">
+            <input type="hidden" name="action" value="add">
             <div>
-                <label class="block text-gray-300 text-sm mb-2">Source Name</label>
-                <input type="text" class="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="e.g., Salary, Freelance">
+                <label class="block text-sm mb-2 card-text">Title *</label>
+                <input type="text" name="title" required class="form-input w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="e.g. Salary">
             </div>
             <div>
-                <label class="block text-gray-300 text-sm mb-2">Category</label>
-                <select class="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option>Employment</option>
-                    <option>Self-Employment</option>
-                    <option>Investment</option>
-                    <option>Rental</option>
-                    <option>Other</option>
+                <label class="block text-sm mb-2 card-text">Category *</label>
+                <select name="category_id" required class="form-select w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="">Select category</option>
+                    <?php foreach ($categories as $cat): ?>
+                    <option value="<?php echo (int)$cat['id']; ?>"><?php echo htmlspecialchars($cat['category_name']); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div>
-                <label class="block text-gray-300 text-sm mb-2">Amount</label>
-                <input type="number" class="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0.00">
+                <label class="block text-sm mb-2 card-text">Amount (USD) *</label>
+                <input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0.00">
             </div>
             <div>
-                <label class="block text-gray-300 text-sm mb-2">Frequency</label>
-                <select class="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option>One-time</option>
-                    <option>Weekly</option>
-                    <option>Bi-weekly</option>
-                    <option>Monthly</option>
-                    <option>Quarterly</option>
-                    <option>Yearly</option>
-                </select>
+                <label class="block text-sm mb-2 card-text">Date *</label>
+                <input type="date" name="income_date" required value="<?php echo date('Y-m-d'); ?>" class="form-input w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500">
             </div>
-            <button type="submit" class="w-full gradient-green text-white py-3 rounded-xl font-medium hover:opacity-90 transition">
-                Add Income Source
-            </button>
+            <div>
+                <label class="block text-sm mb-2 card-text">Description</label>
+                <textarea name="description" rows="2" class="form-textarea w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Optional notes"></textarea>
+            </div>
+            <button type="submit" class="w-full gradient-green text-white py-3 rounded-xl font-medium">Save Income</button>
         </form>
     </div>
 </div>
 
-<script>
-    // Sidebar Toggle
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.querySelector('main');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    let sidebarOpen = true;
-
-    sidebarToggle.addEventListener('click', () => {
-        sidebarOpen = !sidebarOpen;
-        if (sidebarOpen) {
-            sidebar.style.transform = 'translateX(0)';
-            mainContent.style.marginLeft = '16rem';
-        } else {
-            sidebar.style.transform = 'translateX(-100%)';
-            mainContent.style.marginLeft = '0';
-        }
-    });
-
-    // Theme Toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const body = document.body;
-    
-    themeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        if (body.classList.contains('dark-mode')) {
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-        } else {
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-        }
-    });
-</script>
-
-</body>
-</html>
+<?php include __DIR__ . '/../includes/layout_end.php'; ?>

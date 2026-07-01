@@ -23,7 +23,7 @@ if (!isset($conn)) {
         $conn = $db;
     } else {
       
-        $conn = mysqli_connect('127.0.0.1', 'root', '', 'smart_finance');
+        $conn = mysqli_connect('127.0.0.1', 'root', '', 'financedb');
         if (!$conn) {
             die('Database connection not found.');
         }
@@ -92,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .glassmorphism {
             background: rgba(255, 255, 255, 0.1);
@@ -121,10 +122,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <!--Form -->
+        <?php if (!empty($errors)): ?>
+        <div class="mb-4 p-4 bg-red-500/20 border border-red-500/40 rounded-xl text-red-200 text-sm">
+            <?php foreach ($errors as $err): ?><p><?php echo htmlspecialchars($err); ?></p><?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
         <div class="glassmorphism-dark rounded-3xl p-8 shadow-2xl">
-            <form action="#" method="POST" class="space-y-6">
-                
-                <     <!-- Phone -->
+            <form action="" method="POST" class="space-y-6">
+
+                <!-- Phone -->
                 <div>
                     <label class="block text-white text-sm font-medium mb-2">Phone</label>
                     <div class="relative">

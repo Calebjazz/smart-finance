@@ -1,8 +1,6 @@
 <?php
 
 session_start();
-
-?>
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +9,7 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Finance</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @keyframes blink {
             0%, 100% { opacity: 1; }
@@ -38,7 +37,8 @@ session_start();
 
             <!-- Logo -->
             <div>
-                <h1 class="text-2xl font-bold text-white">
+                <h1 class="text-2xl font-bold text-white flex items-center justify-center gap-2">
+                    <i class="fas fa-wallet text-green-500"></i>
                     Smart<span class="text-blue-400">Finance</span>
                 </h1>
             </div>
@@ -147,16 +147,8 @@ session_start();
                             Money Managed
                         </p>
 
-                        <h3
-                            class="text-green-400 text-3xl font-bold mt-2">
-
-                            $2.5B+
-
-                        </h3>
-
-                        <p class="text-gray-400">
-                            Tracked
-                        </p>
+                        <h3 class="text-green-400 text-3xl font-bold mt-2">USD</h3>
+                        <p class="text-gray-400">Currency</p>
 
                     </div>
 
@@ -178,18 +170,18 @@ session_start();
                         
                         <div class="grid grid-cols-2 gap-4 mb-6">
                             <div class="bg-blue-500/20 rounded-xl p-4 border border-blue-500/30">
-                                <p class="text-blue-300 text-sm">Total Income</p>
-                                <p class="text-white text-2xl font-bold">$8,450</p>
+                                <p class="text-blue-300 text-sm">Track Income</p>
+                                <p class="text-white text-lg font-bold">All sources</p>
                             </div>
                             <div class="bg-red-500/20 rounded-xl p-4 border border-red-500/30">
-                                <p class="text-red-300 text-sm">Total Expenses</p>
-                                <p class="text-white text-2xl font-bold">$3,280</p>
+                                <p class="text-red-300 text-sm">Track Expenses</p>
+                                <p class="text-white text-lg font-bold">By category</p>
                             </div>
                         </div>
                         
                         <div class="bg-green-500/20 rounded-xl p-4 border border-green-500/30 mb-4">
-                            <p class="text-green-300 text-sm">Monthly Savings</p>
-                            <p class="text-white text-2xl font-bold">$5,170</p>
+                            <p class="text-green-300 text-sm">Savings Goals</p>
+                            <p class="text-white text-lg font-bold">Progress in USD</p>
                         </div>
                         
                         <button class="w-full bg-linear-to-r from-blue-500 to-green-500 text-white py-3 rounded-xl font-medium hover:opacity-90 transition">
