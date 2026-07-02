@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/init.php';
+if (!isset($conn) || !$conn instanceof mysqli) {
+    throw new RuntimeException('Database connection not initialized');
+}
 require_login();
 
 $user_id = (int) $_SESSION['user_id'];

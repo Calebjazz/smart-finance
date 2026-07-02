@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id'])) return;
         <h2 class="font-bold text-base">Financial Consultation Agent</h2>
         <button id="closeAdvisor" type="button" class="text-emerald-200 hover:text-white">✕</button>
     </div>
-    <div id="chatMessages" class="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-900 space-y-3"></div>
+    <div id="chatMessages" class="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-gray-300 space-y-3"></div>
     <div class="p-3 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-600 flex gap-2">
         <input id="advisorMessage" type="text" class="form-input flex-1 rounded-xl px-4 py-2 text-sm" placeholder="Ask your financial question...">
         <button id="advisorSend" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white w-10 h-10 rounded-xl flex items-center justify-center">
@@ -79,7 +79,7 @@ if (!isset($_SESSION['user_id'])) return;
         const id = 'msg-' + Date.now();
         msgDiv.id = id;
         if (sender === 'user') msgDiv.className = 'bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-100 rounded-lg p-3 ml-8 text-right text-sm';
-        else if (sender === 'ai-loading') msgDiv.className = 'bg-gray-200 dark:bg-slate-700 text-gray-500 rounded-lg p-3 mr-8 italic text-sm animate-pulse';
+        else if (sender === 'ai-loading') msgDiv.className = 'bg-gray-300 dark:bg-slate-700 text-white rounded-lg p-3 mr-8 italic text-sm animate-pulse';
         else if (sender === 'error') msgDiv.className = 'bg-red-100 dark:bg-red-900/30 text-red-700 rounded-lg p-3 text-sm text-center';
         else msgDiv.className = 'bg-white dark:bg-slate-800 rounded-lg p-3 mr-8 text-sm border-l-4 border-emerald-600 card-text';
         msgDiv.innerText = text;

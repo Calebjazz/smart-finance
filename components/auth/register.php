@@ -116,8 +116,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="w-full max-w-md">
         <!-- Logo -->
-        <div class="text-center mb-8">
+       <div class="text-center mb-8">
             <h1 class="text-2xl font-bold text-white">
+                <i class="fas fa-wallet text-green-400"></i>
                 Smart<span class="text-blue-400">Finance</span>
             </h1>
             <p class="text-gray-300 mt-2">Create your account</p>
