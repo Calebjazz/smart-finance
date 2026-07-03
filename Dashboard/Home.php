@@ -11,7 +11,6 @@ refresh_user_session($conn, $user_id);
 
 $total_income = get_total_income($conn, $user_id);
 $total_expenses = get_total_expenses($conn, $user_id);
-$total_savings = get_total_savings($conn, $user_id);
 $total_balance = get_balance($conn, $user_id);
 
 $monthly = get_monthly_income_expenses($conn, $user_id);
@@ -41,7 +40,7 @@ include __DIR__ . '/../includes/user_navbar.php';
         <p class="card-text">Welcome to your Smart Finance Dashboard. Here is your financial overview.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div class="stat-card card rounded-2xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 gradient-blue rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-white text-xl"></i></div>
@@ -63,13 +62,7 @@ include __DIR__ . '/../includes/user_navbar.php';
             <p class="text-sm mb-1 card-text">Total Expenses</p>
             <p class="text-2xl font-bold card-title"><?php echo format_usd($total_expenses); ?></p>
         </div>
-        <div class="stat-card card rounded-2xl p-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 gradient-purple rounded-xl flex items-center justify-center"><i class="fas fa-piggy-bank text-white text-xl"></i></div>
-            </div>
-            <p class="text-sm mb-1 card-text">Total Savings</p>
-            <p class="text-2xl font-bold card-title"><?php echo format_usd($total_savings); ?></p>
-        </div>
+        
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -83,7 +76,7 @@ include __DIR__ . '/../includes/user_navbar.php';
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div class="card rounded-2xl p-6 lg:col-span-2">
             <h3 class="text-lg font-semibold mb-4 card-title">Monthly Spending</h3>
             <div class="chart-container"><canvas id="monthlySpendingChart"></canvas></div>
@@ -112,7 +105,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                 <?php endforeach; endif; ?>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <?php if ($budget_total > 0): ?>
     <div class="card rounded-2xl p-6">

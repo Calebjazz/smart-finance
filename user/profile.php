@@ -72,7 +72,7 @@ $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 if ($row) $member_since = date('M Y', strtotime($row['created_at']));
 
 $tx_count = count(get_recent_transactions($conn, $user_id, 1000));
-$goals_done = count(array_filter(get_user_savings_goals($conn, $user_id), fn($g) => (float)$g['current_amount'] >= (float)$g['target_amount']));
+// $goals_done = count(array_filter(get_user_savings_goals($conn, $user_id), fn($g) => (float)$g['current_amount'] >= (float)$g['target_amount']));
 
 $page_title = 'Profile';
 $active_page = 'profile';
@@ -133,11 +133,10 @@ include __DIR__ . '/../includes/user_navbar.php';
         </form>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Member Since</p><p class="text-xl font-bold card-title"><?php echo $member_since ?: '-'; ?></p></div>
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Transactions</p><p class="text-xl font-bold card-title"><?php echo $tx_count; ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Goals Achieved</p><p class="text-xl font-bold card-title"><?php echo $goals_done; ?></p></div>
-    </div>
+       
 </div>
 
 <?php include __DIR__ . '/../includes/layout_end.php'; ?>

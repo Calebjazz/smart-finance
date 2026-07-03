@@ -89,18 +89,18 @@ CREATE TABLE IF NOT EXISTS budget_items (
     FOREIGN KEY (category_id) REFERENCES expense_categories(id)
 );
 
--- SAVINGS & GOALS
-CREATE TABLE IF NOT EXISTS savings_goals (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    goal_name VARCHAR(150) NOT NULL,
-    target_amount DECIMAL(12,2) NOT NULL,
-    current_amount DECIMAL(12,2) DEFAULT 0,
-    target_date DATE,
-    status ENUM('active','completed') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- -- SAVINGS & GOALS
+-- CREATE TABLE IF NOT EXISTS savings_goals (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT NOT NULL,
+--     goal_name VARCHAR(150) NOT NULL,
+--     target_amount DECIMAL(12,2) NOT NULL,
+--     current_amount DECIMAL(12,2) DEFAULT 0,
+--     target_date DATE,
+--     status ENUM('active','completed') DEFAULT 'active',
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- );
 
 -- NOTIFICATIONS
 CREATE TABLE IF NOT EXISTS notifications (
@@ -217,14 +217,14 @@ SELECT b.id, 2, 500.00, 350.00 FROM budgets b JOIN users u ON u.id=b.user_id WHE
 INSERT INTO budget_items (budget_id, category_id, allocated_amount, spent_amount)
 SELECT b.id, 3, 200.00, 60.00 FROM budgets b JOIN users u ON u.id=b.user_id WHERE u.email='jane@example.com' ORDER BY b.id ASC LIMIT 1;
 
-INSERT INTO savings_goals (user_id, goal_name, target_amount, current_amount, target_date, status)
-SELECT u.id, 'Emergency Fund', 10000.00, 2500.00, DATE_ADD(CURDATE(), INTERVAL 6 MONTH), 'active' FROM users u WHERE u.email='jane@example.com' LIMIT 1;
+-- INSERT INTO savings_goals (user_id, goal_name, target_amount, current_amount, target_date, status)
+-- SELECT u.id, 'Emergency Fund', 10000.00, 2500.00, DATE_ADD(CURDATE(), INTERVAL 6 MONTH), 'active' FROM users u WHERE u.email='jane@example.com' LIMIT 1;
 
-INSERT INTO savings_goals (user_id, goal_name, target_amount, current_amount, target_date, status)
-SELECT u.id, 'Vacation', 3000.00, 800.00, DATE_ADD(CURDATE(), INTERVAL 3 MONTH), 'active' FROM users u WHERE u.email='jane@example.com' LIMIT 1;
+-- INSERT INTO savings_goals (user_id, goal_name, target_                                                                                                    amount, current_amount, target_date, status)
+-- SELECT u.id, 'Vacation', 3000.00, 800.00, DATE_ADD(CURDATE(), INTERVAL 3 MONTH), 'active' FROM users u WHERE u.email='jane@example.com' LIMIT 1;
 
-INSERT INTO savings_goals (user_id, goal_name, target_amount, current_amount, target_date, status)
-SELECT u.id, 'New Laptop', 1500.00, 400.00, NULL, 'active' FROM users u WHERE u.email='john@example.com' LIMIT 1;
+-- INSERT INTO savings_goals (user_id, goal_name, target_amount, current_amount, target_date, status)
+-- SELECT u.id, 'New Laptop', 1500.00, 400.00, NULL, 'active' FROM users u WHERE u.email='john@example.com' LIMIT 1;
 
 INSERT INTO savings_transactions (user_id, amount, status, type, REFERENCE, transaction_date)
 SELECT u.id, 500.00, 'active', 'deposit', 'EMERG-001', DATE_SUB(CURDATE(), INTERVAL 10 DAY) FROM users u WHERE u.email='jane@example.com' LIMIT 1;

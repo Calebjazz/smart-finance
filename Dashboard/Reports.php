@@ -63,21 +63,23 @@ include __DIR__ . '/../includes/user_navbar.php';
     </div>
 
     <div class="card rounded-2xl p-4 mb-8">
-        <form method="GET" class="flex flex-wrap items-end gap-4">
-            <div><label class="text-sm card-text block mb-1">From</label><input type="date" name="from" value="<?php echo htmlspecialchars($from); ?>" class="form-input rounded-lg px-4 py-2"></div>
-            <div><label class="text-sm card-text block mb-1">To</label><input type="date" name="to" value="<?php echo htmlspecialchars($to); ?>" class="form-input rounded-lg px-4 py-2"></div>
+        <form method="GET" class="flex flex-wrap items-end gap-4"> 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="text-sm card-text block mb-1">From</label><input type="date" name="from" value="<?php echo htmlspecialchars($from); ?>" class="form-input rounded-lg px-4 py-2"></div>
+                 <div><label class="text-sm card-text block mb-1">To</label><input type="date" name="to" value="<?php echo htmlspecialchars($to); ?>" class="form-input rounded-lg px-4 py-2"></div>
+            </div>
             <button type="submit" class="gradient-cyan text-white px-6 py-2 rounded-xl font-medium"><i class="fas fa-filter mr-1"></i> Apply</button>
         </form>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-4 md:grid-cols-2 gap-6 mb-8">
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Net Income</p><p class="text-2xl font-bold card-title"><?php echo format_usd($net); ?></p></div>
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Expenses</p><p class="text-2xl font-bold card-title"><?php echo format_usd($total_expenses); ?></p></div>
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Savings Rate</p><p class="text-2xl font-bold card-title"><?php echo $savings_rate; ?>%</p></div>
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Avg Daily Spend</p><p class="text-2xl font-bold card-title"><?php echo format_usd($avg_daily); ?></p></div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div class="card rounded-2xl p-6">
             <h3 class="text-lg font-semibold mb-4 card-title">Income vs Expenses Trend</h3>
             <div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div>
@@ -91,7 +93,7 @@ include __DIR__ . '/../includes/user_navbar.php';
     <div class="card rounded-2xl p-6">
         <h3 class="text-lg font-semibold mb-4 card-title">Monthly Savings</h3>
         <div class="chart-container" style="height:200px"><canvas id="monthlyComparisonChart"></canvas></div>
-    </div>
+    </div> -->
 </div>
 
 <?php

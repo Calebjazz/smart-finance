@@ -61,11 +61,20 @@ session_start();
 
 </nav>
 
-<!-- hero section -->
+<<!-- hero section -->
 <section
-    class="min-h-screen pt-24 bg-linear-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center">
+    class="relative min-h-screen pt-24 flex items-center bg-cover bg-center bg-no-repeat"
+    style="
+        background-image: 
+        linear-gradient(rgba(2,6,23,0.75), rgba(15,23,42,0.75)),
+        url('../assets/images/one.jpg');
+    ">
 
-    <div class="max-w-7xl mx-auto px-6">
+    <!-- Optional Dark Overlay -->
+    <div class="absolute inset-0 bg-black/20"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-6">
 
         <div class="grid lg:grid-cols-2 gap-10 items-center">
 
@@ -73,123 +82,53 @@ session_start();
 
             <div>
 
-
-                <h1
-                    class="text-white text-2xl md:text-7xl font-bold leading-tight mt-8">
-
-                      Smart finance, Where Smart <br>
+                <h1 class="text-white text-2xl md:text-7xl font-bold leading-tight mt-8">
+                    Smart Finance, Where Smart <br>
                     <span id="typing-text" class="text-blue-400 typing-container"></span><span class="animate-pulse">|</span>
-
                 </h1>
 
-                <p
-                    class="text-gray-300 mt-8 max-w-lg text-lg">
-
-                    Track your income, monitor expenses, automated budgeting, 
-                    set savings goals, and get AI-powered financial consultations 
+                <p class="text-gray-300 mt-8 max-w-lg text-lg">
+                    Track your income, monitor expenses, automated budgeting,
+                    set savings goals, and get AI-powered financial consultations
                     - all in one powerful platform.
-
                 </p>
 
                 <div class="flex items-center gap-5 mt-10">
-
                     <a href="auth/register.php"
-                        class="bg-blue-500 hover:bg-blue-600 transition text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                         Start Free Trial
-
                     </a>
-               </div>
+                </div>
 
-               
                 <!-- Stats -->
-
                 <div class="flex items-center gap-12 mt-16">
 
                     <div>
-
-                        <div class="text-yellow-400 text-xl">
-                            ★★★★★
-                        </div>
-
-                        <h2 class="text-white text-5xl font-bold mt-2">
-                            4.9
-                        </h2>
-
-                        <p class="text-gray-400">
-                            User Rating
-                        </p>
-
+                        <div class="text-yellow-400 text-xl">★★★★★</div>
+                        <h2 class="text-white text-5xl font-bold mt-2">4.9</h2>
+                        <p class="text-gray-400">User Rating</p>
                     </div>
 
                     <div>
-
-                        <p class="text-white font-semibold">
-                            Active Users
-                        </p>
-
-                        <h3
-                            class="text-blue-400 text-3xl font-bold mt-2">
-
-                            50,000+
-
-                        </h3>
-
-                        <p class="text-gray-400">
-                            Worldwide
-                        </p>
-
+                        <p class="text-white font-semibold">Active Users</p>
+                        <h3 class="text-blue-400 text-3xl font-bold mt-2">50,000+</h3>
+                        <p class="text-gray-400">Worldwide</p>
                     </div>
 
                     <div>
-
-                        <p class="text-white font-semibold">
-                            Money Managed
-                        </p>
-
+                        <p class="text-white font-semibold">Money Managed</p>
                         <h3 class="text-green-400 text-3xl font-bold mt-2">USD</h3>
                         <p class="text-gray-400">Currency</p>
-
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- RIGHT - Dashboard Preview -->
-
+            <!-- RIGHT -->
             <div class="relative self-start pt-14">
 
-                <div class="bg-linear-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-lg rounded-3xl p-8 border border-white/10 shadow-2xl">
-                    
-                    <div class="bg-slate-900/80 rounded-2xl p-6 border border-white/10">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-white font-bold text-lg">Dashboard Overview</h3>
-                            <span class="text-green-400 text-sm">+12.5%</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-blue-500/20 rounded-xl p-4 border border-blue-500/30">
-                                <p class="text-blue-300 text-sm">Track Income</p>
-                                <p class="text-white text-lg font-bold">All sources</p>
-                            </div>
-                            <div class="bg-red-500/20 rounded-xl p-4 border border-red-500/30">
-                                <p class="text-red-300 text-sm">Track Expenses</p>
-                                <p class="text-white text-lg font-bold">By category</p>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-green-500/20 rounded-xl p-4 border border-green-500/30 mb-4">
-                            <p class="text-green-300 text-sm">Savings Goals</p>
-                            <p class="text-white text-lg font-bold">Progress in USD</p>
-                        </div>
-                        
-                        <button class="w-full bg-linear-to-r from-blue-500 to-green-500 text-white py-3 rounded-xl font-medium hover:opacity-90 transition">
-                            🤖 Get AI Financial Advice
-                        </button>
-                    </div>
-                    
-                </div>
+                <!-- Keep your existing dashboard card here -->
 
             </div>
 
@@ -198,7 +137,6 @@ session_start();
     </div>
 
 </section>
-
 <!-- features section -->
 <section class="py-24 bg-slate-900">
 
@@ -436,7 +374,7 @@ session_start();
                 </p>
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">
-                        <img src="assets/images/Viola_Curry.jpg" alt="Viola_Curry" class="w-full h-full rounded-full object-cover">
+                        <img src="../assets/images/Viola_Curry.jpg" alt="Viola_Curry" class="w-full h-full rounded-full object-cover">
                     </div>
                     <div>
                         <p class="text-white font-medium">Viola Curry</p>
@@ -454,7 +392,7 @@ session_start();
                 </p>
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">
-                        <img src="assets/images/Johnny_Tenfingers.jpg" alt="Johnny_Tenfingers" class="w-full h-full rounded-full object-cover">
+                        <img src="../assets/images/Johnny_Tenfingers.jpg" alt="Johnny_Tenfingers" class="w-full h-full rounded-full object-cover">
                     </div>
                     <div>
                         <p class="text-white font-medium">Johnny Tenfingers</p>
@@ -472,7 +410,7 @@ session_start();
                 </p>
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">
-                        <img src="assets/images/Sasha_Whiteman.jpg" alt="Sasha_Whiteman" class="w-full h-full rounded-full object-cover">
+                        <img src="../assets/images/Sasha_Whiteman.jpg" alt="Sasha_Whiteman" class="w-full h-full rounded-full object-cover">
                     </div>
                     <div>
                         <p class="text-white font-medium">Sasha Whiteman</p>
@@ -526,17 +464,17 @@ session_start();
                 <ul class="space-y-2 text-gray-400">
                     <li><a href="#" class="hover:text-blue-400 transition">Home</a></li>
                     <li><a href="#" class="hover:text-blue-400 transition">About Us</a></li>
-                    <li><a href="#" class="hover:text-blue-400 transition">Services</a></li>
+                    <li><a href="#text-center mb-16" class="hover:text-blue-400 transition">Services</a></li>
                     <li><a href="#" class="hover:text-blue-400 transition">Contact</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-bold mb-4">Features</h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li><a href="#" class="hover:text-blue-400 transition"> Automated Budgeting</a></li>
-                    <li><a href="#" class="hover:text-blue-400 transition">Financial Reports</a></li>
-                    <li><a href="#" class="hover:text-blue-400 transition">AI Consultant</a></li>
-                    <li><a href="#" class="hover:text-blue-400 transition">Savings Goals</a></li>
+                    <li>Automated Budgeting</li>
+                    <li>Financial Reports</li>
+                    <li>AI Consultant</li>
+                    <li>Savings Goals</li>
                 </ul>
             </div>
             <div>

@@ -7,7 +7,6 @@ $nav = [
     'income' => ['file' => 'Income.php', 'icon' => 'fa-arrow-trend-up', 'label' => 'Income', 'color' => 'text-green-400'],
     'expenses' => ['file' => 'Expenses.php', 'icon' => 'fa-arrow-trend-down', 'label' => 'Expenses', 'color' => 'text-red-400'],
     'budget' => ['file' => 'Budget.php', 'icon' => 'fa-piggy-bank', 'label' => 'Budget', 'color' => 'text-yellow-400'],
-    'savings' => ['file' => 'Saving&Goals.php', 'icon' => 'fa-bullseye', 'label' => 'Savings & Goals', 'color' => 'text-purple-400'],
     'transactions' => ['file' => 'transactions.php', 'icon' => 'fa-exchange-alt', 'label' => 'Transactions', 'color' => 'text-blue-400'],
     'reports' => ['file' => 'Reports.php', 'icon' => 'fa-chart-pie', 'label' => 'Reports', 'color' => 'text-cyan-400'],
     'profile' => ['file' => 'profile.php', 'icon' => 'fa-user', 'label' => 'Profile', 'color' => 'text-pink-400', 'path' => $user_path],

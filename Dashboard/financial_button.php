@@ -19,7 +19,7 @@ if (!isset($_SESSION['user_id'])) return;
     <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 flex items-center justify-between">
         <h2 class="font-bold text-base">Financial Consultation Agent</h2>
         <button id="closeAdvisor" type="button" class="text-emerald-200 hover:text-white">✕</button>
-    </div>
+    </div>`
     <div id="chatMessages" class="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-gray-300 space-y-3"></div>
     <div class="p-3 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-600 flex gap-2">
         <input id="advisorMessage" type="text" class="form-input flex-1 rounded-xl px-4 py-2 text-sm" placeholder="Ask your financial question...">
