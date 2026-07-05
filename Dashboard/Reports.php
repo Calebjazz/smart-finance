@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../includes/init.php';
 require_login();
 
+global $conn;
+
 $user_id = (int) $_SESSION['user_id'];
 $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
 
@@ -14,6 +16,19 @@ $net = $total_income - $total_expenses;
 $savings_rate = $total_income > 0 ? round(($net / $total_income) * 100, 1) : 0;
 $days = max(1, (strtotime($to) - strtotime($from)) / 86400 + 1);
 $avg_daily = $total_expenses / $days;
+
+// Budget remaining for the active reporting period. Uses the shared
+// get_budget_remaining() helper so the dashboard, reports and budget
+// pages all show the exact same number.
+$budgets_remaining = get_budget_remaining($conn, $user_id);
+$total_budget_remaining = 0.0;
+$total_budget_amount    = 0.0;
+$total_budget_spent     = 0.0;
+foreach ($budgets_remaining as $br) {
+    $total_budget_remaining += (float) $br['remaining'];
+    $total_budget_amount    += (float) $br['budget_amount'];
+    $total_budget_spent     += (float) $br['spent'];
+}
 
 $monthly = get_monthly_income_expenses($conn, $user_id);
 $category_data = get_expenses_by_category($conn, $user_id);
@@ -57,18 +72,18 @@ include __DIR__ . '/../includes/user_navbar.php';
             <p class="card-text">Analytics and insights for your financial health</p>
         </div>
         <div class="flex gap-2">
-            <a href="?from=<?php echo urlencode($from); ?>&to=<?php echo urlencode($to); ?>&export=csv" class="gradient-cyan text-white px-4 py-2 rounded-xl text-sm font-medium"><i class="fas fa-file-csv mr-1"></i> Export CSV</a>
+            <a href="?from=<?php echo urlencode($from); ?>&to=<?php echo urlencode($to); ?>&export=csv" class="gradient-blue text-white px-4 py-2 rounded-xl text-sm font-medium"><i class="fas fa-file-csv mr-1"></i> Export CSV</a>
             <button type="button" onclick="window.print()" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium"><i class="fas fa-file-pdf mr-1"></i> Print / PDF</button>
         </div>
     </div>
 
     <div class="card rounded-2xl p-4 mb-8">
-        <form method="GET" class="flex flex-wrap items-end gap-4"> 
+        <form method="GET" class="flex flex-wrap items-end gap-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label class="text-sm card-text block mb-1">From</label><input type="date" name="from" value="<?php echo htmlspecialchars($from); ?>" class="form-input rounded-lg px-4 py-2"></div>
                  <div><label class="text-sm card-text block mb-1">To</label><input type="date" name="to" value="<?php echo htmlspecialchars($to); ?>" class="form-input rounded-lg px-4 py-2"></div>
             </div>
-            <button type="submit" class="gradient-cyan text-white px-6 py-2 rounded-xl font-medium"><i class="fas fa-filter mr-1"></i> Apply</button>
+            <button type="submit" class="gradient-blue text-white px-6 py-2 rounded-xl font-medium"><i class="fas fa-filter mr-1"></i> Apply</button>
         </form>
     </div>
 

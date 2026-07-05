@@ -5,6 +5,11 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/functions.php';
 
+/** @var mysqli $conn — make sure the global db handle is in scope */
+if (!isset($conn) || !$conn instanceof mysqli) {
+    global $conn;
+}
+
 function require_login(): void
 {
     if (!isset($_SESSION['user_id'])) {
@@ -33,4 +38,9 @@ function refresh_user_session(mysqli $conn, int $user_id): void
         $_SESSION['phone'] = $user['phone'];
         $_SESSION['role'] = $user['role'];
     }
+}
+
+function is_logged_in(): bool
+{
+    return isset($_SESSION['user_id']);
 }

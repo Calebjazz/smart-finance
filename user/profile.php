@@ -110,10 +110,8 @@ include __DIR__ . '/../includes/user_navbar.php';
             </div>
             <div class="text-center md:text-left">
                 <h2 class="text-2xl font-bold card-title mb-2"><?php echo $user_name; ?></h2>
-                <p class="card-text mb-4"><?php echo $user_email; ?></p>
                 <div class="flex flex-wrap gap-2 justify-center md:justify-start">
                     <span class="bg-green-500/20 text-green-600 dark:text-green-400 px-3 py-1 rounded-full text-sm">Active</span>
-                    <?php if ($member_since): ?><span class="bg-blue-500/20 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-sm">Since <?php echo $member_since; ?></span><?php endif; ?>
                     <?php if ($avatar): ?><a href="?remove_avatar=1" class="text-sm text-red-500 hover:underline">Remove photo</a><?php endif; ?>
                 </div>
             </div>
@@ -129,7 +127,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                 <div><label class="block text-sm mb-2 card-text">Email *</label><input type="email" name="email" required value="<?php echo $user_email; ?>" class="form-input w-full rounded-xl px-4 py-3"></div>
                 <div><label class="block text-sm mb-2 card-text">Phone *</label><input type="tel" name="phone" required value="<?php echo $user_phone; ?>" class="form-input w-full rounded-xl px-4 py-3"></div>
             </div>
-            <div class="flex justify-end"><button type="submit" class="gradient-green text-white px-8 py-3 rounded-xl font-medium">Save Changes</button></div>
+            <div class="flex justify-end"><button type="submit" class="gradient-blue text-white px-8 py-3 rounded-xl font-medium">Save Changes</button></div>
         </form>
     </div>
 

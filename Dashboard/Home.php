@@ -43,7 +43,7 @@ include __DIR__ . '/../includes/user_navbar.php';
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div class="stat-card card rounded-2xl p-6">
             <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 gradient-blue rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-white text-xl"></i></div>
+                <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-white text-xl"></i></div>
             </div>
             <p class="text-sm mb-1 card-text">Total Balance</p>
             <p class="text-2xl font-bold card-title"><?php echo format_usd($total_balance); ?></p>
@@ -57,7 +57,7 @@ include __DIR__ . '/../includes/user_navbar.php';
         </div>
         <div class="stat-card card rounded-2xl p-6">
             <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 gradient-red rounded-xl flex items-center justify-center"><i class="fas fa-arrow-trend-down text-white text-xl"></i></div>
+                <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center"><i class="fas fa-arrow-trend-down text-white text-xl"></i></div>
             </div>
             <p class="text-sm mb-1 card-text">Total Expenses</p>
             <p class="text-2xl font-bold card-title"><?php echo format_usd($total_expenses); ?></p>
@@ -110,7 +110,7 @@ include __DIR__ . '/../includes/user_navbar.php';
     <?php if ($budget_total > 0): ?>
     <div class="card rounded-2xl p-6">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-semibold card-title">Budget Overview (50/30/20 Rule)</h3>
+            <h3 class="text-lg font-semibold card-title">Budget Overview</h3>
             <a href="Budget.php" class="text-blue-500 text-sm hover:underline">Manage Budget</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -64,7 +64,8 @@ include __DIR__ . '/../includes/user_navbar.php';
     <?php if ($error): ?><div class="alert-error rounded-xl p-4 mb-4"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
     <div class="mb-6">
-        <button type="button" onclick="document.getElementById('addBudgetModal').classList.remove('hidden')" class="gradient-yellow text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2">
+        <button type="button" onclick="document.getElementById('addBudgetModal').classList.remove('hidden')" class="gradient-blue
+         text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2">
             <i class="fas fa-plus"></i> Create Budget
         </button>
     </div>

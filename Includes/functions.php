@@ -1,12 +1,21 @@
 <?php
 
+// Currency helpers
+function format_tsh(float $amount): string
+{
+    // Tanzanian Shillings - format as: Tsh 1,234.56
+    return 'Tsh ' . number_format($amount, 2);
+}
+
+// Backward compatibility: keep old name but route to Tsh
 function format_usd(float $amount): string
 {
-    return '$' . number_format($amount, 2);
+    return format_tsh($amount);
 }
 
 function get_user_initials(string $name): string
 {
+
     $parts = preg_split('/\s+/', trim($name));
     if (count($parts) >= 2) {
         return strtoupper(substr($parts[0], 0, 1) . substr($parts[1], 0, 1));
@@ -50,6 +59,16 @@ function get_total_income(mysqli $conn, int $user_id, ?string $from = null, ?str
     return (float) ($row['total'] ?? 0);
 }
 
+/**
+ * Total deposits shown on the transactions page.
+ * Source of truth is the `incomes` table so this value is guaranteed
+ * to match `get_total_income()`.
+ */
+function get_total_deposits(mysqli $conn, int $user_id, ?string $from = null, ?string $to = null): float
+{
+    return get_total_income($conn, $user_id, $from, $to);
+}
+
 function get_total_expenses(mysqli $conn, int $user_id, ?string $from = null, ?string $to = null): float
 {
     $sql = "SELECT COALESCE(SUM(amount), 0) AS total FROM expenses WHERE user_id = ?";
@@ -74,6 +93,16 @@ function get_total_expenses(mysqli $conn, int $user_id, ?string $from = null, ?s
     return (float) ($row['total'] ?? 0);
 }
 
+/**
+ * Total withdraws shown on the transactions page.
+ * Source of truth is the `expenses` table so this value is guaranteed
+ * to match `get_total_expenses()`.
+ */
+function get_total_withdraws(mysqli $conn, int $user_id, ?string $from = null, ?string $to = null): float
+{
+    return get_total_expenses($conn, $user_id, $from, $to);
+}
+
 function get_total_savings(mysqli $conn, int $user_id): float
 {
     $stmt = mysqli_prepare($conn, "SELECT COALESCE(SUM(current_amount), 0) AS total FROM savings_goals WHERE user_id = ?");
@@ -83,9 +112,79 @@ function get_total_savings(mysqli $conn, int $user_id): float
     return (float) ($row['total'] ?? 0);
 }
 
-function get_balance(mysqli $conn, int $user_id): float
+/**
+ * Current user balance.
+ * Single source of truth: balance = total_income - total_expenses.
+ * No persisted balance column is used; this is recomputed on every read
+ * so adding an income or an expense is immediately reflected everywhere.
+ */
+function get_balance(mysqli $conn, int $user_id, ?string $from = null, ?string $to = null): float
 {
-    return get_total_income($conn, $user_id) - get_total_expenses($conn, $user_id);
+    return get_total_income($conn, $user_id, $from, $to)
+        - get_total_expenses($conn, $user_id, $from, $to);
+}
+
+/**
+ * Unified transactions list shown on the Transactions page.
+ * Combines income (as deposits) and expenses (as withdraws) into a single,
+ * chronologically ordered feed so all views stay in sync.
+ *
+ * Returned rows are normalized to the shape:
+ *   [
+ *     'id'           => int,
+ *     'user_id'      => int,
+ *     'tx_type'      => 'deposit' | 'withdraw',
+ *     'amount'       => float,
+ *     'description'  => string,
+ *     'category'     => string|null,
+ *     'tx_date'      => 'Y-m-d',
+ *     'created_at'   => 'Y-m-d H:i:s',
+ *     'source'       => 'income' | 'expense',
+ *     'source_id'    => int,
+ *   ]
+ */
+function get_unified_transactions(mysqli $conn, int $user_id, int $limit = 200): array
+{
+    $sql = "
+        SELECT
+            i.id            AS id,
+            i.user_id       AS user_id,
+            'deposit'       AS tx_type,
+            i.amount        AS amount,
+            i.source        AS description,
+            NULL            AS category,
+            i.income_date   AS tx_date,
+            i.created_at    AS created_at,
+            'income'        AS source,
+            i.id            AS source_id
+        FROM incomes i
+        WHERE i.user_id = ?
+
+        UNION ALL
+
+        SELECT
+            e.id            AS id,
+            e.user_id       AS user_id,
+            'withdraw'      AS tx_type,
+            e.amount        AS amount,
+            e.description   AS description,
+            ec.category_name AS category,
+            e.expense_date  AS tx_date,
+            e.created_at    AS created_at,
+            'expense'       AS source,
+            e.id            AS source_id
+        FROM expenses e
+        LEFT JOIN expense_categories ec ON ec.id = e.category_id
+        WHERE e.user_id = ?
+
+        ORDER BY tx_date DESC, created_at DESC
+        LIMIT ?
+    ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, 'iii', $user_id, $user_id, $limit);
+    mysqli_stmt_execute($stmt);
+    return mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
 }
 
 function get_notification_count(mysqli $conn, int $user_id): int
@@ -328,4 +427,119 @@ function save_report_record(mysqli $conn, int $user_id, string $report_type): bo
     $stmt = mysqli_prepare($conn, "INSERT INTO reports (user_id, report_type) VALUES (?, ?)");
     mysqli_stmt_bind_param($stmt, 'is', $user_id, $report_type);
     return mysqli_stmt_execute($stmt);
+}
+
+/**
+ * Chart data helpers — used by the api/chart_data.php endpoint AND by
+ * any page that wants to re-render its charts after a POST/redirect
+ * without making an extra HTTP request. The numbers returned here are
+ * the single source of truth for every chart on the dashboard, reports
+ * and transactions pages, so all graphs and stat cards stay in sync
+ * with the moment a user adds or removes an income / expense / budget.
+ */
+
+function get_chart_monthly(mysqli $conn, int $user_id): array
+{
+    $data = get_monthly_income_expenses($conn, $user_id);
+    $savings = [];
+    foreach ($data['income'] as $i => $v) {
+        $savings[] = round(((float) $v) - ((float) $data['expenses'][$i]), 2);
+    }
+    return [
+        'labels'   => $data['labels'],
+        'income'   => $data['income'],
+        'expenses' => $data['expenses'],
+        'savings'  => $savings,
+    ];
+}
+
+function get_chart_category(mysqli $conn, int $user_id): array
+{
+    $rows = get_expenses_by_category($conn, $user_id);
+    $labels = array_map(fn($r) => $r['category_name'], $rows);
+    $values = array_map(fn($r) => (float) $r['total'], $rows);
+    return ['labels' => $labels, 'values' => $values];
+}
+
+function get_chart_income_expense(mysqli $conn, int $user_id, ?string $from = null, ?string $to = null): array
+{
+    return [
+        'total_income'   => get_total_income($conn, $user_id, $from, $to),
+        'total_expenses' => get_total_expenses($conn, $user_id, $from, $to),
+        'balance'        => get_balance($conn, $user_id, $from, $to),
+    ];
+}
+
+function get_chart_flow(mysqli $conn, int $user_id, int $days = 14): array
+{
+    $days = max(1, $days);
+    $labels = [];
+    $values = [];
+    for ($i = $days - 1; $i >= 0; $i--) {
+        $d = date('Y-m-d', strtotime("-$i days"));
+        $labels[] = date('M j', strtotime($d));
+        $stmt = mysqli_prepare($conn, "
+            SELECT
+              (SELECT COALESCE(SUM(amount),0) FROM incomes
+                 WHERE user_id = ? AND income_date <= ?) -
+              (SELECT COALESCE(SUM(amount),0) FROM expenses
+                 WHERE user_id = ? AND expense_date <= ?) AS bal
+        ");
+        mysqli_stmt_bind_param($stmt, 'isss', $user_id, $d, $user_id, $d);
+        mysqli_stmt_execute($stmt);
+        $values[] = (float) (mysqli_fetch_assoc(mysqli_stmt_get_result($stmt))['bal'] ?? 0);
+    }
+    return ['labels' => $labels, 'values' => $values];
+}
+
+function get_budget_remaining(mysqli $conn, int $user_id, ?int $budget_id = null): array
+{
+    // Per-row budget remaining (budget_amount - spent so far) so the
+    // dashboard, reports, and budget pages all see the same value.
+    $sql = "
+        SELECT
+            b.id            AS id,
+            b.budget_amount AS budget_amount,
+            b.month         AS month,
+            b.year          AS year,
+            b.category_id   AS category_id,
+            ec.category_name AS category_name,
+            COALESCE((
+                SELECT SUM(e.amount) FROM expenses e
+                WHERE e.user_id = b.user_id
+                  AND e.category_id = b.category_id
+                  AND MONTH(e.expense_date) =
+                      CASE LOWER(b.month)
+                          WHEN 'january' THEN 1 WHEN 'february' THEN 2
+                          WHEN 'march' THEN 3 WHEN 'april' THEN 4
+                          WHEN 'may' THEN 5 WHEN 'june' THEN 6
+                          WHEN 'july' THEN 7 WHEN 'august' THEN 8
+                          WHEN 'september' THEN 9 WHEN 'october' THEN 10
+                          WHEN 'november' THEN 11 WHEN 'december' THEN 12
+                          ELSE MONTH(b.month)
+                      END
+                  AND YEAR(e.expense_date) = b.year
+            ), 0) AS spent
+        FROM budgets b
+        JOIN expense_categories ec ON ec.id = b.category_id
+        WHERE b.user_id = ?
+    ";
+    $types = 'i';
+    $params = [$user_id];
+    if ($budget_id !== null) {
+        $sql .= " AND b.id = ?";
+        $types .= 'i';
+        $params[] = $budget_id;
+    }
+    $sql .= " ORDER BY b.year DESC, b.month DESC";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
+    mysqli_stmt_execute($stmt);
+    $rows = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+
+    foreach ($rows as &$r) {
+        $r['remaining'] = round(((float) $r['budget_amount']) - ((float) $r['spent']), 2);
+    }
+    return $rows;
 }

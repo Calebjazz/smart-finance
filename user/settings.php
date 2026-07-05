@@ -59,7 +59,7 @@ include __DIR__ . '/../includes/user_navbar.php';
             <div><label class="block text-sm mb-2 card-text">Current Password</label><input type="password" name="current_password" required class="form-input w-full rounded-xl px-4 py-3"></div>
             <div><label class="block text-sm mb-2 card-text">New Password</label><input type="password" name="new_password" required minlength="6" class="form-input w-full rounded-xl px-4 py-3"></div>
             <div><label class="block text-sm mb-2 card-text">Confirm Password</label><input type="password" name="confirm_password" required class="form-input w-full rounded-xl px-4 py-3"></div>
-            <button type="submit" class="gradient-green text-white px-8 py-3 rounded-xl font-medium">Update Password</button>
+            <button type="submit" class="gradient-blue text-white px-8 py-3 rounded-xl font-medium">Update Password</button>
         </form>
     </div>
 
