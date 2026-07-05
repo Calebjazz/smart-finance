@@ -2,6 +2,9 @@
 require_once __DIR__ . '/../includes/init.php';
 require_admin();
 
+// Ensure we have the database connection from the included init
+global $conn;
+
 $admin_name = htmlspecialchars($_SESSION['full_name'] ?? 'Admin');
 $message = '';
 $error = '';

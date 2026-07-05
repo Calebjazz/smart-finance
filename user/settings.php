@@ -65,7 +65,7 @@ include __DIR__ . '/../includes/user_navbar.php';
 
     <div class="card rounded-2xl p-6 mb-8">
         <h3 class="text-lg font-semibold mb-4 card-title">Preferences</h3>
-        <p class="card-text text-sm mb-4">Currency is set to US Dollars (USD) across the system.</p>
+        <p class="card-text text-sm mb-4">Currency is set to Tanzanian Shillings (Tsh) across the system.</p>
         <p class="card-text text-sm">Use the theme toggle in the top bar to switch between light and dark mode. Your preference is saved automatically.</p>
     </div>
 

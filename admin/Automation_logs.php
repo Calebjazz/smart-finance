@@ -3,11 +3,12 @@ require_once __DIR__ . '/../includes/init.php';
 require_admin();
 
 $admin_name = htmlspecialchars($_SESSION['full_name'] ?? 'Admin');
-$logs = mysqli_fetch_all(mysqli_query($conn, "
+$query_result = isset($conn) ? mysqli_query($conn, "
     SELECT al.*, u.full_name FROM automation_logs al
     LEFT JOIN users u ON u.id = al.user_id
     ORDER BY al.created_at DESC LIMIT 100
-"), MYSQLI_ASSOC);
+") : null;
+$logs = $query_result ? mysqli_fetch_all($query_result, MYSQLI_ASSOC) : [];
 
 $page_title = 'Automation Logs';
 $active_page = 'automation';

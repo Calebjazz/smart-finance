@@ -6,6 +6,11 @@ $admin_name = htmlspecialchars($_SESSION['full_name'] ?? 'Admin');
 $message = '';
 $error = '';
 
+// Ensure $conn is available (init.php may set it). Fall back to a local default
+if (!isset($conn) || !$conn) {
+    $conn = $GLOBALS['conn'] ?? mysqli_connect('localhost', 'root', '', 'smart_finance');
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'toggle_status') {

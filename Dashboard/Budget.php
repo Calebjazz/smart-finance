@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/init.php';
+// Ensure $conn is available (some setups store connection in global scope)
+$conn = $conn ?? ($GLOBALS['conn'] ?? null);
 require_login();
 
 $user_id = (int) $_SESSION['user_id'];
@@ -31,7 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($action === 'delete') {
         $id = (int) ($_POST['id'] ?? 0);
-        mysqli_query($conn, "DELETE bi FROM budget_items bi JOIN budgets b ON b.id = bi.budget_id WHERE b.id = $id AND b.user_id = $user_id");
+        $stmt = mysqli_prepare($conn, "DELETE bi FROM budget_items bi JOIN budgets b ON b.id = bi.budget_id WHERE b.id = ? AND b.user_id = ?");
+        mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
+        mysqli_stmt_execute($stmt);
         $stmt = mysqli_prepare($conn, "DELETE FROM budgets WHERE id = ? AND user_id = ?");
         mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
         mysqli_stmt_execute($stmt);
@@ -71,9 +75,9 @@ include __DIR__ . '/../includes/user_navbar.php';
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Budget</p><p class="text-2xl font-bold card-title"><?php echo format_usd($total_budget); ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Spent This Month</p><p class="text-2xl font-bold card-title"><?php echo format_usd($month_expenses); ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Remaining</p><p class="text-2xl font-bold card-title"><?php echo format_usd(max(0, $total_budget - $month_expenses)); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Budget</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($total_budget); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Spent This Month</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($month_expenses); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Remaining</p><p class="text-2xl font-bold card-title"><?php echo format_tsh(max(0, $total_budget - $month_expenses)); ?></p></div>
     </div>
 
     <div class="card rounded-2xl p-6">
@@ -87,7 +91,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                     <?php else: foreach ($budgets as $b): ?>
                     <tr class="border-b table-row">
                         <td class="py-4 card-title"><?php echo htmlspecialchars($b['category_name']); ?></td>
-                        <td class="py-4 font-medium"><?php echo format_usd((float)$b['budget_amount']); ?></td>
+                        <td class="py-4 font-medium"><?php echo format_tsh((float)$b['budget_amount']); ?></td>
                         <td class="py-4 card-text"><?php echo htmlspecialchars($b['month']); ?></td>
                         <td class="py-4 card-text"><?php echo htmlspecialchars($b['year']); ?></td>
                         <td class="py-4">
@@ -114,7 +118,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                     <?php foreach ($categories as $cat): ?><option value="<?php echo (int)$cat['id']; ?>"><?php echo htmlspecialchars($cat['category_name']); ?></option><?php endforeach; ?>
                 </select>
             </div>
-            <div><label class="block text-sm mb-2 card-text">Budget Amount (USD) *</label><input type="number" name="budget_amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3"></div>
+            <div><label class="block text-sm mb-2 card-text">Budget Amount (Tsh) *</label><input type="number" name="budget_amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3"></div>
             <div><label class="block text-sm mb-2 card-text">Month *</label><input type="text" name="month" required value="<?php echo date('F'); ?>" class="form-input w-full rounded-xl px-4 py-3"></div>
             <div><label class="block text-sm mb-2 card-text">Year *</label><input type="number" name="year" required value="<?php echo date('Y'); ?>" class="form-input w-full rounded-xl px-4 py-3"></div>
             <button type="submit" class="w-full gradient-yellow text-white py-3 rounded-xl font-medium">Save Budget</button>

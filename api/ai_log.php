@@ -21,5 +21,6 @@ if ($question === '') {
     exit;
 }
 
+global $conn;
 $ok = save_ai_consultation($conn, $user_id, $question, $response);
 echo json_encode(['success' => $ok]);

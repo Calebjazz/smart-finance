@@ -46,21 +46,21 @@ include __DIR__ . '/../includes/user_navbar.php';
                 <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center"><i class="fas fa-wallet text-white text-xl"></i></div>
             </div>
             <p class="text-sm mb-1 card-text">Total Balance</p>
-            <p class="text-2xl font-bold card-title"><?php echo format_usd($total_balance); ?></p>
+            <p class="text-2xl font-bold card-title"><?php echo format_tsh($total_balance); ?></p>
         </div>
         <div class="stat-card card rounded-2xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center"><i class="fas fa-arrow-trend-up text-white text-xl"></i></div>
             </div>
             <p class="text-sm mb-1 card-text">Total Income</p>
-            <p class="text-2xl font-bold card-title"><?php echo format_usd($total_income); ?></p>
+            <p class="text-2xl font-bold card-title"><?php echo format_tsh($total_income); ?></p>
         </div>
         <div class="stat-card card rounded-2xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 gradient-green rounded-xl flex items-center justify-center"><i class="fas fa-arrow-trend-down text-white text-xl"></i></div>
             </div>
             <p class="text-sm mb-1 card-text">Total Expenses</p>
-            <p class="text-2xl font-bold card-title"><?php echo format_usd($total_expenses); ?></p>
+            <p class="text-2xl font-bold card-title"><?php echo format_tsh($total_expenses); ?></p>
         </div>
         
     </div>
@@ -100,7 +100,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                         <p class="text-sm font-medium truncate card-title"><?php echo htmlspecialchars($tx['label'] ?: 'Transaction'); ?></p>
                         <p class="text-xs card-text"><?php echo date('M j, Y', strtotime($tx['tx_date'])); ?></p>
                     </div>
-                    <p class="font-medium <?php echo $isIncome ? 'text-green-500' : 'text-red-500'; ?>"><?php echo ($isIncome ? '+' : '-') . format_usd((float)$tx['amount']); ?></p>
+                    <p class="font-medium <?php echo $isIncome ? 'text-green-500' : 'text-red-500'; ?>"><?php echo ($isIncome ? '+' : '-') . format_tsh((float)$tx['amount']); ?></p>
                 </div>
                 <?php endforeach; endif; ?>
             </div>
@@ -115,15 +115,15 @@ include __DIR__ . '/../includes/user_navbar.php';
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Needs (50%)</span><span class="font-medium card-title"><?php echo format_usd($needs); ?></span></div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Needs (50%)</span><span class="font-medium card-title"><?php echo format_tsh($needs); ?></span></div>
                 <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-blue-500 h-2 rounded-full" style="width:50%"></div></div>
             </div>
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Wants (30%)</span><span class="font-medium card-title"><?php echo format_usd($wants); ?></span></div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Wants (30%)</span><span class="font-medium card-title"><?php echo format_tsh($wants); ?></span></div>
                 <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-purple-500 h-2 rounded-full" style="width:30%"></div></div>
             </div>
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Savings (20%)</span><span class="font-medium card-title"><?php echo format_usd($savings_alloc); ?></span></div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Savings (20%)</span><span class="font-medium card-title"><?php echo format_tsh($savings_alloc); ?></span></div>
                 <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-green-500 h-2 rounded-full" style="width:20%"></div></div>
             </div>
         </div>

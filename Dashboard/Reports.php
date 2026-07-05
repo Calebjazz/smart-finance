@@ -43,11 +43,17 @@ if (isset($_GET['export'])) {
         fputcsv($out, ['Total Income', $total_income]);
         fputcsv($out, ['Total Expenses', $total_expenses]);
         fputcsv($out, ['Net Income', $net]);
+        fputcsv($out, ['Budget Remaining', $total_budget_remaining]);
         fputcsv($out, ['Savings Rate %', $savings_rate]);
         fputcsv($out, []);
         fputcsv($out, ['Category', 'Amount']);
         foreach ($category_data as $c) {
             fputcsv($out, [$c['category_name'], $c['total']]);
+        }
+        fputcsv($out, []);
+        fputcsv($out, ['Budget Category', 'Allocated', 'Spent', 'Remaining']);
+        foreach ($budgets_remaining as $br) {
+            fputcsv($out, [$br['category_name'], $br['budget_amount'], $br['spent'], $br['remaining']]);
         }
         fclose($out);
         exit;
@@ -88,11 +94,51 @@ include __DIR__ . '/../includes/user_navbar.php';
     </div>
 
     <div class="grid grid-cols-4 md:grid-cols-2 gap-6 mb-8">
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Net Income</p><p class="text-2xl font-bold card-title"><?php echo format_usd($net); ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Expenses</p><p class="text-2xl font-bold card-title"><?php echo format_usd($total_expenses); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Net Income</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($net); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Expenses</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($total_expenses); ?></p></div>
+        <div class="card rounded-2xl p-6">
+            <p class="text-sm card-text">Budget Remaining</p>
+            <p class="text-2xl font-bold card-title"><?php echo format_tsh($total_budget_remaining); ?></p>
+            <p class="text-xs card-text mt-1">of <?php echo format_tsh($total_budget_amount); ?> allocated · <?php echo format_tsh($total_budget_spent); ?> spent</p>
+        </div>
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Savings Rate</p><p class="text-2xl font-bold card-title"><?php echo $savings_rate; ?>%</p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Avg Daily Spend</p><p class="text-2xl font-bold card-title"><?php echo format_usd($avg_daily); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Avg Daily Spend</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($avg_daily); ?></p></div>
     </div>
+
+    <?php if (!empty($budgets_remaining)): ?>
+    <div class="card rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold card-title">Budget Remaining by Category</h3>
+            <a href="Budget.php" class="text-blue-500 text-sm hover:underline">Manage Budgets</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <?php foreach ($budgets_remaining as $br):
+                $pct = $br['budget_amount'] > 0
+                    ? round(((float) $br['spent'] / (float) $br['budget_amount']) * 100)
+                    : 0;
+                $pct = max(0, min(100, $pct));
+                $remainingClass = ((float) $br['remaining']) < 0
+                    ? 'text-red-500'
+                    : (((float) $br['remaining']) < ((float) $br['budget_amount']) * 0.2
+                        ? 'text-yellow-500'
+                        : 'text-green-500');
+            ?>
+            <div class="sub-card rounded-xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-medium card-title"><?php echo htmlspecialchars($br['category_name']); ?></span>
+                    <span class="text-xs card-text"><?php echo htmlspecialchars($br['month'] . ' ' . $br['year']); ?></span>
+                </div>
+                <p class="text-xl font-bold <?php echo $remainingClass; ?>"><?php echo format_tsh((float) $br['remaining']); ?></p>
+                <p class="text-xs card-text mt-1">of <?php echo format_tsh((float) $br['budget_amount']); ?> budget</p>
+                <div class="w-full bg-gray-300 rounded-full h-2 mt-2 dark:bg-slate-700">
+                    <div class="<?php echo ((float)$br['remaining'] < 0) ? 'bg-red-500' : 'bg-blue-500'; ?> h-2 rounded-full" style="width:<?php echo $pct; ?>%"></div>
+                </div>
+                <p class="text-xs card-text mt-1"><?php echo $pct; ?>% spent</p>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div class="card rounded-2xl p-6">

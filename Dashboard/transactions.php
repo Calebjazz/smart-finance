@@ -68,8 +68,8 @@ include __DIR__ . '/../includes/user_navbar.php';
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Deposits</p><p class="text-2xl font-bold text-green-500"><?php echo format_usd($total_deposits); ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Withdrawals</p><p class="text-2xl font-bold text-red-500"><?php echo format_usd($total_withdrawals); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Deposits</p><p class="text-2xl font-bold text-green-500"><?php echo format_tsh($total_deposits); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Withdrawals</p><p class="text-2xl font-bold text-red-500"><?php echo format_tsh($total_withdrawals); ?></p></div>
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">All Activity</p><p class="text-2xl font-bold card-title"><?php echo count($all_tx); ?></p></div>
     </div>
 
@@ -88,7 +88,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                         <td class="py-4 card-title"><?php echo htmlspecialchars($tx['label']); ?></td>
                         <td class="py-4"><span class="px-2 py-1 rounded text-xs <?php echo $isCredit ? 'bg-green-500/20 text-green-600' : 'bg-red-500/20 text-red-600'; ?>"><?php echo htmlspecialchars(ucfirst(str_replace('_', ' ', $tx['type']))); ?></span></td>
                         <td class="py-4 card-text"><?php echo htmlspecialchars($tx['category_name'] ?? '-'); ?></td>
-                        <td class="py-4 font-medium <?php echo $isCredit ? 'text-green-500' : 'text-red-500'; ?>"><?php echo ($isCredit ? '+' : '-') . format_usd((float)$tx['amount']); ?></td>
+                        <td class="py-4 font-medium <?php echo $isCredit ? 'text-green-500' : 'text-red-500'; ?>"><?php echo ($isCredit ? '+' : '-') . format_tsh((float)$tx['amount']); ?></td>
                         <td class="py-4 card-text"><?php echo date('M j, Y', strtotime($tx['tx_date'])); ?></td>
                     </tr>
                     <?php endforeach; endif; ?>
@@ -107,7 +107,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                 <select name="type" class="form-select w-full rounded-xl px-4 py-3"><option value="deposit">Deposit</option><option value="withdrawal">Withdrawal</option></select>
             </div>
             <div><label class="block text-sm mb-2 card-text">Reference *</label><input type="text" name="reference" required class="form-input w-full rounded-xl px-4 py-3" placeholder="Transaction reference"></div>
-            <div><label class="block text-sm mb-2 card-text">Amount (USD) *</label><input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3"></div>
+            <div><label class="block text-sm mb-2 card-text">Amount (Tsh) *</label><input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3"></div>
             <div><label class="block text-sm mb-2 card-text">Status *</label>
                 <select name="status" class="form-select w-full rounded-xl px-4 py-3"><option value="active">Active</option><option value="completed">Completed</option></select>
             </div>

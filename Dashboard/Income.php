@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/init.php';
 require_login();
+$conn = $GLOBALS['conn'] ?? null; // ensure $conn is defined to avoid undefined variable notices
 
 $user_id = (int) $_SESSION['user_id'];
 $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
@@ -20,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_bind_param($stmt, 'iidsss', $user_id, $category_id, $amount, $description, $title, $income_date);
             if (mysqli_stmt_execute($stmt)) {
                 $message = 'Income added successfully.';
-                create_notification($conn, $user_id, 'Income recorded', format_usd($amount) . ' from ' . $title);
+                create_notification($conn, $user_id, 'Income recorded', format_tsh($amount) . ' from ' . $title);
             } else {
                 $error = 'Failed to add income.';
             }
@@ -70,7 +71,7 @@ include __DIR__ . '/../includes/user_navbar.php';
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="card rounded-2xl p-6">
             <p class="text-sm card-text">Total Income</p>
-            <p class="text-2xl font-bold card-title"><?php echo format_usd($total_income); ?></p>
+            <p class="text-2xl font-bold card-title"><?php echo format_tsh($total_income); ?></p>
         </div>
         <div class="card rounded-2xl p-6">
             <p class="text-sm card-text">Active Sources</p>
@@ -78,7 +79,7 @@ include __DIR__ . '/../includes/user_navbar.php';
         </div>
         <div class="card rounded-2xl p-6">
             <p class="text-sm card-text">This Month</p>
-            <p class="text-2xl font-bold card-title"><?php echo format_usd($month_income); ?></p>
+            <p class="text-2xl font-bold card-title"><?php echo format_tsh($month_income); ?></p>
         </div>
     </div>
 
@@ -98,7 +99,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                     <tr class="border-b table-row">
                         <td class="py-4 card-title"><?php echo htmlspecialchars($row['title']); ?></td>
                         <td class="py-4"><span class="bg-blue-500/20 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full text-sm"><?php echo htmlspecialchars($row['category_name']); ?></span></td>
-                        <td class="py-4 font-medium text-green-500"><?php echo format_usd((float)$row['amount']); ?></td>
+                        <td class="py-4 font-medium text-green-500"><?php echo format_tsh((float)$row['amount']); ?></td>
                         <td class="py-4 card-text"><?php echo date('M j, Y', strtotime($row['income_date'])); ?></td>
                         <td class="py-4">
                             <form method="POST" class="inline" onsubmit="return confirm('Delete this income?');">
@@ -136,7 +137,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                 </select>
             </div>
             <div>
-                <label class="block text-sm mb-2 card-text">Amount (USD) *</label>
+                <label class="block text-sm mb-2 card-text">Amount (Tsh) *</label>
                 <input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="0.00">
             </div>
             <div>

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../includes/init.php';
 require_login();
 
+global $conn;
 $user_id = (int) $_SESSION['user_id'];
 $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
 $message = '';
@@ -19,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_bind_param($stmt, 'iidss', $user_id, $category_id, $amount, $description, $expense_date);
             if (mysqli_stmt_execute($stmt)) {
                 $message = 'Expense added successfully.';
-                create_notification($conn, $user_id, 'Expense recorded', format_usd($amount) . ' - ' . $description);
+                create_notification($conn, $user_id, 'Expense recorded', format_tsh($amount) . ' - ' . $description);
             } else {
                 $error = 'Failed to add expense.';
             }
@@ -67,9 +68,9 @@ include __DIR__ . '/../includes/user_navbar.php';
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Expenses</p><p class="text-2xl font-bold card-title"><?php echo format_usd($total_expenses); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Expenses</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($total_expenses); ?></p></div>
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Categories Used</p><p class="text-2xl font-bold card-title"><?php echo count($by_category); ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">This Month</p><p class="text-2xl font-bold card-title"><?php echo format_usd($month_expenses); ?></p></div>
+        <div class="card rounded-2xl p-6"><p class="text-sm card-text">This Month</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($month_expenses); ?></p></div>
     </div>
 
     <?php if (!empty($by_category)): ?>
@@ -79,7 +80,7 @@ include __DIR__ . '/../includes/user_navbar.php';
         ?>
         <div class="card rounded-xl p-4">
             <p class="font-medium card-title"><?php echo htmlspecialchars($cat['category_name']); ?></p>
-            <p class="text-xl font-bold card-title"><?php echo format_usd((float)$cat['total']); ?></p>
+            <p class="text-xl font-bold card-title"><?php echo format_tsh((float)$cat['total']); ?></p>
             <div class="w-full bg-gray-300 rounded-full h-2 mt-2"><div class="bg-red-500 h-2 rounded-full" style="width:<?php echo $pct; ?>%"></div></div>
         </div>
         <?php endforeach; ?>
@@ -98,7 +99,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                     <tr class="border-b table-row">
                         <td class="py-4 card-title"><?php echo htmlspecialchars($row['description']); ?></td>
                         <td class="py-4"><span class="bg-red-500/20 text-red-600 dark:text-red-300 px-3 py-1 rounded-full text-sm"><?php echo htmlspecialchars($row['category_name']); ?></span></td>
-                        <td class="py-4 font-medium text-red-500"><?php echo format_usd((float)$row['amount']); ?></td>
+                        <td class="py-4 font-medium text-red-500"><?php echo format_tsh((float)$row['amount']); ?></td>
                         <td class="py-4 card-text"><?php echo date('M j, Y', strtotime($row['expense_date'])); ?></td>
                         <td class="py-4">
                             <form method="POST" class="inline" onsubmit="return confirm('Delete this expense?');">
@@ -129,7 +130,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                     <?php foreach ($categories as $cat): ?><option value="<?php echo (int)$cat['id']; ?>"><?php echo htmlspecialchars($cat['category_name']); ?></option><?php endforeach; ?>
                 </select>
             </div>
-            <div><label class="block text-sm mb-2 card-text">Amount (USD) *</label><input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500"></div>
+            <div><label class="block text-sm mb-2 card-text">Amount (Tsh) *</label><input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500"></div>
             <div><label class="block text-sm mb-2 card-text">Date *</label><input type="date" name="expense_date" required value="<?php echo date('Y-m-d'); ?>" class="form-input w-full rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500"></div>
             <button type="submit" class="w-full gradient-red text-white py-3 rounded-xl font-medium">Save Expense</button>
         </form>

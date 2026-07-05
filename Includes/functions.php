@@ -7,11 +7,7 @@ function format_tsh(float $amount): string
     return 'Tsh ' . number_format($amount, 2);
 }
 
-// Backward compatibility: keep old name but route to Tsh
-function format_usd(float $amount): string
-{
-    return format_tsh($amount);
-}
+// Note: removed duplicate/deprecated alias for format_tsh to avoid redeclaration.
 
 function get_user_initials(string $name): string
 {
