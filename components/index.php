@@ -289,20 +289,20 @@ session_start();
 
             <div class="text-center">
                 <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">2</div>
-                <h3 class="text-xl font-bold text-white mb-3">Connect Accounts</h3>
-                <p class="text-gray-400">Link your Mobile account and income sources securely</p>
+                <h3 class="text-xl font-bold text-white mb-3">Add Your Income</h3>
+                <p class="text-gray-400">Add your income sources and let AI budget it for tou</p>
             </div>
 
             <div class="text-center">
                 <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">3</div>
-                <h3 class="text-xl font-bold text-white mb-3">Set Goals</h3>
-                <p class="text-gray-400">Define your financial goals and let AI create your budget</p>
+                <h3 class="text-xl font-bold text-white mb-3">Define Budgets</h3>
+                <p class="text-gray-400">Let AI create it for you</p>
             </div>
 
             <div class="text-center">
                 <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">4</div>
                 <h3 class="text-xl font-bold text-white mb-3">Track & Grow</h3>
-                <p class="text-gray-400">Monitor progress and get AI-powered financial advice</p>
+                <p class="text-gray-400">Monitor progress and get AI-powered financial advice 24/7</p>
             </div>
 
         </div>
@@ -388,7 +388,12 @@ session_start();
 </section>
 
 <!-- CTA Section -->
-<section class="py-24 bg-linear-to-r from-blue-600 to-green-500">
+<section  class="relative min-h-screen pt-24 flex items-center bg-cover bg-center bg-no-repeat"
+    style="
+        background-image: 
+        linear-gradient(rgba(2,6,23,0.75), rgba(15,23,42,0.75)),
+        url('../assets/images/three.jpg');
+    ">
 
     <div class="max-w-4xl mx-auto px-6 text-center">
 
@@ -436,7 +441,6 @@ session_start();
                     <li>Automated Budgeting</li>
                     <li>Financial Reports</li>
                     <li>AI Consultant</li>
-                    <li>Savings Goals</li>
                 </ul>
             </div>
             <div>

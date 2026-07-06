@@ -111,19 +111,19 @@ include __DIR__ . '/../includes/user_navbar.php';
     <div class="card rounded-2xl p-6">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold card-title">Budget Overview</h3>
-            <a href="Budget.php" class="text-blue-500 text-sm hover:underline">Manage Budget</a>
+            <a href="Budget.php" class="text-blue-500 text-sm hover:underline">Check Budget</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Needs (50%)</span><span class="font-medium card-title"><?php echo format_tsh($needs); ?></span></div>
-                <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-blue-500 h-2 rounded-full" style="width:50%"></div></div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Needs (50%)</span></div>
+                <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-green-500 h-2 rounded-full" style="width:50%"></div></div>
             </div>
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Wants (30%)</span><span class="font-medium card-title"><?php echo format_tsh($wants); ?></span></div>
-                <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-purple-500 h-2 rounded-full" style="width:30%"></div></div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Wants (30%)</div>
+                <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-green-500 h-2 rounded-full" style="width:30%"></div></div>
             </div>
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Savings (20%)</span><span class="font-medium card-title"><?php echo format_tsh($savings_alloc); ?></span></div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Savings (20%)</div>
                 <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-green-500 h-2 rounded-full" style="width:20%"></div></div>
             </div>
         </div>

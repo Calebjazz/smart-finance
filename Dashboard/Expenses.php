@@ -19,8 +19,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = mysqli_prepare($conn, "INSERT INTO expenses (user_id, category_id, amount, description, expense_date) VALUES (?, ?, ?, ?, ?)");
             mysqli_stmt_bind_param($stmt, 'iidss', $user_id, $category_id, $amount, $description, $expense_date);
             if (mysqli_stmt_execute($stmt)) {
+                $expense_id = mysqli_insert_id($conn);
                 $message = 'Expense added successfully.';
                 create_notification($conn, $user_id, 'Expense recorded', format_tsh($amount) . ' - ' . $description);
+
+                // n8n webhook code integration
+                $payload = json_encode([
+                    "userId" => $user_id,
+                    "expenseId" => $expense_id
+                ]);
+
+                // Switched path to webhook-test for active screen logging
+                $ch = curl_init("http://localhost:5678/webhook-test/2189377c-a4fa-49e6-8468-7ca449650003");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 2); // Prevents page from hanging if n8n is offline
+                curl_exec($ch);
+                curl_close($ch);
+                // 
+
             } else {
                 $error = 'Failed to add expense.';
             }
@@ -132,9 +151,9 @@ include __DIR__ . '/../includes/user_navbar.php';
             </div>
             <div><label class="block text-sm mb-2 card-text">Amount (Tsh) *</label><input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500"></div>
             <div><label class="block text-sm mb-2 card-text">Date *</label><input type="date" name="expense_date" required value="<?php echo date('Y-m-d'); ?>" class="form-input w-full rounded-xl px-4 py-3 focus:ring-2 focus:ring-red-500"></div>
-            <button type="submit" class="w-full gradient-red text-white py-3 rounded-xl font-medium">Save Expense</button>
+            <button type="submit" class="w-full gradient-red text-white py-3 rounded-xl font-medium hover:opacity-90 transition">Save Expense</button>
         </form>
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/layout_end.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

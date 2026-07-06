@@ -9,46 +9,49 @@ $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
 $message = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    if ($action === 'add') {
-        $category_id = (int) ($_POST['category_id'] ?? 0);
-        $budget_amount = (float) ($_POST['budget_amount'] ?? 0);
-        $month = trim($_POST['month'] ?? date('F'));
-        $year = (int) ($_POST['year'] ?? date('Y'));
-        if ($category_id && $budget_amount > 0) {
-            $stmt = mysqli_prepare($conn, "INSERT INTO budgets (user_id, category_id, budget_amount, month, year) VALUES (?, ?, ?, ?, ?)");
-            mysqli_stmt_bind_param($stmt, 'iidsi', $user_id, $category_id, $budget_amount, $month, $year);
-            if (mysqli_stmt_execute($stmt)) {
-                $budget_id = mysqli_insert_id($conn);
-                $stmt2 = mysqli_prepare($conn, "INSERT INTO budget_items (budget_id, category_id, allocated_amount, spent_amount) VALUES (?, ?, ?, 0)");
-                mysqli_stmt_bind_param($stmt2, 'iid', $budget_id, $category_id, $budget_amount);
-                mysqli_stmt_execute($stmt2);
-                $message = 'Budget created successfully.';
-            } else {
-                $error = 'Failed to create budget.';
-            }
-        } else {
-            $error = 'Please fill all required fields.';
-        }
-    } elseif ($action === 'delete') {
-        $id = (int) ($_POST['id'] ?? 0);
-        $stmt = mysqli_prepare($conn, "DELETE bi FROM budget_items bi JOIN budgets b ON b.id = bi.budget_id WHERE b.id = ? AND b.user_id = ?");
-        mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
-        mysqli_stmt_execute($stmt);
-        $stmt = mysqli_prepare($conn, "DELETE FROM budgets WHERE id = ? AND user_id = ?");
-        mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
-        mysqli_stmt_execute($stmt);
-        $message = 'Budget deleted.';
-    }
-}
+$current_month = (int)date('m');
+$current_year = (int)date('Y');
 
-$budgets = get_user_budgets($conn, $user_id);
-$categories = get_expense_categories($conn);
-$total_budget = array_sum(array_column($budgets, 'budget_amount'));
-$month_expenses = get_month_expenses($conn, $user_id);
+// 1. DYNAMIC PAYCHECK EVALUATION: Calculate Total Budget straight from the incomes table
+$income_query = mysqli_prepare($conn, "SELECT COALESCE(SUM(amount), 0) AS total_income FROM incomes WHERE user_id = ? AND MONTH(income_date) = ? AND YEAR(income_date) = ?");
+mysqli_stmt_bind_param($income_query, 'iii', $user_id, $current_month, $current_year);
+mysqli_stmt_execute($income_query);
+$income_res = mysqli_fetch_assoc(mysqli_stmt_get_result($income_query));
+$total_budget = (float)($income_res['total_income'] ?? 0);
 
-$page_title = 'Budget';
+// 2. AUTOMATIC 50/30/20 ALLOCATION ENGINE: Map your unique database categories
+$framework_targets = [
+    1 => [
+        'name' => 'Needs (Essential Bills | Rent | Food | Health | Transport)', 
+        'ratio' => 0.50, 
+        'limit' => $total_budget * 0.50,
+        'mapped_ids' => [1, 2, 3, 4, 6] // Housing, Food, Transport, Utilities, Healthcare
+    ],
+    2 => [
+        'name' => 'Wants (Entertainment | Leisure | Education | Misc)', 
+        'ratio' => 0.30, 
+        'limit' => $total_budget * 0.30,
+        'mapped_ids' => [5, 7, 8] // Entertainment, Education, Other
+    ],
+    3 => [
+        'name' => 'Savings & Financial Growth Pool', 
+        'ratio' => 0.20, 
+        'limit' => $total_budget * 0.20,
+        'mapped_ids' => [0] // Placeholder (Savings are unspent remaining balances)
+    ]
+];
+
+// 3. AGGREGATE TOTAL SPENDING: Add up all expenses logged for the current month
+$expense_query = mysqli_prepare($conn, "SELECT COALESCE(SUM(amount), 0) AS total_spent FROM expenses WHERE user_id = ? AND MONTH(expense_date) = ? AND YEAR(expense_date) = ?");
+mysqli_stmt_bind_param($expense_query, 'iii', $user_id, $current_month, $current_year);
+mysqli_stmt_execute($expense_query);
+$expense_res = mysqli_fetch_assoc(mysqli_stmt_get_result($expense_query));
+$month_expenses = (float)($expense_res['total_spent'] ?? 0);
+
+// 4. BALANCING LOGIC: Deduct expenses from budget to show the true remaining pool
+$remaining_balance = $total_budget - $month_expenses;
+
+$page_title = 'Budget Framework';
 $active_page = 'budget';
 $dash_path = '';
 $user_path = '../user/';
@@ -60,69 +63,90 @@ include __DIR__ . '/../includes/user_navbar.php';
 
 <div class="p-6">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2 card-title">Budget Management</h1>
-        <p class="card-text">Plan and track your monthly spending limits</p>
+        <h1 class="text-3xl font-bold mb-2 card-title">Budget</h1>
+        <p class="card-text">Automated 50/30/20 category tracking derived from your real monthly income</p>
     </div>
 
-    <?php if ($message): ?><div class="alert-success rounded-xl p-4 mb-4"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
-    <?php if ($error): ?><div class="alert-error rounded-xl p-4 mb-4"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
-
-    <div class="mb-6">
-        <button type="button" onclick="document.getElementById('addBudgetModal').classList.remove('hidden')" class="gradient-blue
-         text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2">
-            <i class="fas fa-plus"></i> Create Budget
-        </button>
-    </div>
-
+    <!-- Macro Metrics Panels -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Budget</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($total_budget); ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Spent This Month</p><p class="text-2xl font-bold card-title"><?php echo format_tsh($month_expenses); ?></p></div>
-        <div class="card rounded-2xl p-6"><p class="text-sm card-text">Remaining</p><p class="text-2xl font-bold card-title"><?php echo format_tsh(max(0, $total_budget - $month_expenses)); ?></p></div>
+        <div class="card rounded-2xl p-6 bg-white shadow-sm border border-gray-100">
+            <p class="text-sm font-medium text-gray-400">Total Budget (From Income)</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1"><?php echo format_tsh($total_budget); ?></p>
+        </div>
+        <div class="card rounded-2xl p-6 bg-white shadow-sm border border-gray-100">
+            <p class="text-sm font-medium text-gray-400">Spent This Month</p>
+            <p class="text-2xl font-bold text-rose-500 mt-1">- <?php echo format_tsh($month_expenses); ?></p>
+        </div>
+        <div class="card rounded-2xl p-6 bg-white shadow-sm border border-gray-100">
+            <p class="text-sm font-medium text-gray-400">Remaining Framework Balance</p>
+            <p class="text-2xl font-bold <?php echo $remaining_balance >= 0 ? 'text-green-500' : 'text-rose-600'; ?> mt-1">
+                <?php echo format_tsh($remaining_balance); ?>
+            </p>
+        </div>
     </div>
 
-    <div class="card rounded-2xl p-6">
-        <h3 class="text-lg font-semibold mb-4 card-title">Your Budgets</h3>
+    <!-- Smart Categories Breakdown Tables -->
+    <div class="card rounded-2xl p-6 bg-white shadow-sm border border-gray-100">
+        <h3 class="text-lg font-semibold mb-4 text-gray-800">Your Real-Time Target Ratios</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead><tr class="text-left text-sm border-b table-head"><th class="pb-3">Category</th><th class="pb-3">Amount</th><th class="pb-3">Month</th><th class="pb-3">Year</th><th class="pb-3">Actions</th></tr></thead>
-                <tbody>
-                    <?php if (empty($budgets)): ?>
-                    <tr><td colspan="5" class="py-6 text-center card-text">No budgets yet. Create one to start tracking.</td></tr>
-                    <?php else: foreach ($budgets as $b): ?>
-                    <tr class="border-b table-row">
-                        <td class="py-4 card-title"><?php echo htmlspecialchars($b['category_name']); ?></td>
-                        <td class="py-4 font-medium"><?php echo format_tsh((float)$b['budget_amount']); ?></td>
-                        <td class="py-4 card-text"><?php echo htmlspecialchars($b['month']); ?></td>
-                        <td class="py-4 card-text"><?php echo htmlspecialchars($b['year']); ?></td>
-                        <td class="py-4">
-                            <form method="POST" class="inline" onsubmit="return confirm('Delete this budget?');">
-                                <input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?php echo (int)$b['id']; ?>">
-                                <button type="submit" class="text-red-500"><i class="fas fa-trash"></i></button>
-                            </form>
+                <thead>
+                    <tr class="text-left text-sm border-b border-gray-200 text-gray-400 font-medium">
+                        <th class="pb-3">Budget Class</th>
+                        <th class="pb-3">Allocation Framework</th>
+                        <th class="pb-3">Target Ceiling</th>
+                        <th class="pb-3">Current Consumption Progress</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-700">
+                    <?php if ($total_budget <= 0): ?>
+                        <tr><td colspan="4" class="py-6 text-center text-gray-400">No active tracking matrices compiled yet. Add an income record to generate your budget layout automatically!</td></tr>
+                    <?php else: foreach ($framework_targets as $cat_group_id => $data):
+                        // If it's the Savings target row, the amount spent is the remaining allocation math
+                        if ($cat_group_id === 3) {
+                            $cat_spent = $remaining_balance < 0 ? 0 : $remaining_balance;
+                        } else {
+                            // Extract mapped IDs array into comma string: "1,2,3,4,6"
+                            $ids_list = implode(',', $data['mapped_ids']);
+                            
+                            $spent_query = mysqli_prepare($conn, "SELECT COALESCE(SUM(amount), 0) AS cat_spent FROM expenses WHERE user_id = ? AND category_id IN ($ids_list) AND MONTH(expense_date) = ? AND YEAR(expense_date) = ?");
+                            mysqli_stmt_bind_param($spent_query, 'iii', $user_id, $current_month, $current_year);
+                            mysqli_stmt_execute($spent_query);
+                            $spent_res = mysqli_fetch_assoc(mysqli_stmt_get_result($spent_query));
+                            $cat_spent = (float)($spent_res['cat_spent'] ?? 0);
+                        }
+                        
+                        $limit_amt = $data['limit'];
+                        $pct = $limit_amt > 0 ? min(100, round(($cat_spent / $limit_amt) * 100)) : 0;
+                        
+                        // Color layout configuration rules (Green safe, Yellow 75%, Orange 90%, Red 100%+)
+                        $bar_color = 'bg-green-500';
+                        if ($cat_group_id !== 3) {
+                            if (($cat_spent / $limit_amt) >= 1.0) $bar_color = 'bg-rose-600';
+                            elseif (($cat_spent / $limit_amt) >= 0.90) $bar_color = 'bg-amber-500';
+                            elseif (($cat_spent / $limit_amt) >= 0.75) $bar_color = 'bg-yellow-400';
+                        } else {
+                            $bar_color = 'bg-emerald-500'; // Keep savings a steady growth green
+                        }
+                    ?>
+                    <tr class="align-middle">
+                        <td class="py-4 font-semibold text-gray-800"><?php echo htmlspecialchars($data['name']); ?></td>
+                        <td class="py-4 font-medium text-gray-400"><?php echo ($data['ratio'] * 100); ?>% of Earnings</td>
+                        <td class="py-4 font-bold text-gray-700"><?php echo format_tsh($limit_amt); ?></td>
+                        <td class="py-4 w-1/3 min-w-[200px]">
+                            <div class="flex items-center justify-between text-xs font-semibold mb-1 text-gray-500">
+                                <span><?php echo $cat_group_id === 3 ? 'Saved: ' : 'Used: '; ?><?php echo format_tsh($cat_spent); ?></span>
+                                <span><?php echo $pct; ?>%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2">
+                                <div class="<?php echo $bar_color; ?> h-2 rounded-full transition-all duration-500" style="width: <?php echo $pct; ?>%"></div>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; endif; ?>
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
-
-<div id="addBudgetModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-    <div class="modal-panel rounded-2xl p-6 w-full max-w-md">
-        <h3 class="text-xl font-bold mb-6 card-title">Create Budget</h3>
-        <form method="POST" class="space-y-4">
-            <input type="hidden" name="action" value="add">
-            <div><label class="block text-sm mb-2 card-text">Category *</label>
-                <select name="category_id" required class="form-select w-full rounded-xl px-4 py-3">
-                    <?php foreach ($categories as $cat): ?><option value="<?php echo (int)$cat['id']; ?>"><?php echo htmlspecialchars($cat['category_name']); ?></option><?php endforeach; ?>
-                </select>
-            </div>
-            <div><label class="block text-sm mb-2 card-text">Budget Amount (Tsh) *</label><input type="number" name="budget_amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3"></div>
-            <div><label class="block text-sm mb-2 card-text">Month *</label><input type="text" name="month" required value="<?php echo date('F'); ?>" class="form-input w-full rounded-xl px-4 py-3"></div>
-            <div><label class="block text-sm mb-2 card-text">Year *</label><input type="number" name="year" required value="<?php echo date('Y'); ?>" class="form-input w-full rounded-xl px-4 py-3"></div>
-            <button type="submit" class="w-full gradient-yellow text-white py-3 rounded-xl font-medium">Save Budget</button>
-        </form>
     </div>
 </div>
 
