@@ -110,11 +110,46 @@
         } catch (e) { /* ignore */ }
     })();
 
+    // Expose chart helpers immediately so inline scripts can run safely before DOMContentLoaded
+    window.sfChartOptions = (extra = {}) => {
+        if (window.themeManager) {
+            return window.themeManager.buildChartOptions(extra);
+        }
+        // Fallback options build if themeManager is not yet booted
+        const isDark = document.documentElement.classList.contains('dark-mode');
+        const colors = getChartColors(isDark);
+        const base = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: colors.text } },
+            },
+            scales: {
+                y: { ticks: { color: colors.text }, grid: { color: colors.grid } },
+                x: { ticks: { color: colors.text }, grid: { color: colors.grid } },
+            },
+        };
+        return Object.assign(base, extra);
+    };
+
+    window._tempCharts = [];
+    window.sfRegisterChart = (chart) => {
+        if (window.themeManager) {
+            window.themeManager.registerChart(chart);
+        } else {
+            window._tempCharts.push(chart);
+        }
+    };
+
     function boot() {
         window.themeManager = new ThemeManager();
         window.toggleTheme = () => window.themeManager.toggle();
-        window.sfChartOptions = (extra) => window.themeManager.buildChartOptions(extra);
-        window.sfRegisterChart = (chart) => window.themeManager.registerChart(chart);
+
+        // Register any charts that were created before themeManager booted
+        if (window._tempCharts && window._tempCharts.length) {
+            window._tempCharts.forEach((c) => window.themeManager.registerChart(c));
+            window._tempCharts = [];
+        }
 
         const themeToggle = document.getElementById('theme-toggle');
         if (themeToggle) {

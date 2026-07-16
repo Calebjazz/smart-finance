@@ -17,17 +17,52 @@ $savings_rate = $total_income > 0 ? round(($net / $total_income) * 100, 1) : 0;
 $days = max(1, (strtotime($to) - strtotime($from)) / 86400 + 1);
 $avg_daily = $total_expenses / $days;
 
-// Budget remaining for the active reporting period. Uses the shared
-// get_budget_remaining() helper so the dashboard, reports and budget
-// pages all show the exact same number.
-$budgets_remaining = get_budget_remaining($conn, $user_id);
-$total_budget_remaining = 0.0;
-$total_budget_amount    = 0.0;
-$total_budget_spent     = 0.0;
-foreach ($budgets_remaining as $br) {
-    $total_budget_remaining += (float) $br['remaining'];
-    $total_budget_amount    += (float) $br['budget_amount'];
-    $total_budget_spent     += (float) $br['spent'];
+// Budget remaining for the active reporting period.
+// Aligned with the Budget page's 50/30/20 framework logic.
+$total_budget_amount = $total_income;
+$total_budget_spent = $total_expenses;
+$total_budget_remaining = $total_income - $total_expenses;
+
+$framework_targets = [
+    [
+        'category_name' => 'Needs (50%)',
+        'budget_amount' => $total_budget_amount * 0.50,
+        'mapped_ids' => [1, 2, 3, 4, 6]
+    ],
+    [
+        'category_name' => 'Wants (30%)',
+        'budget_amount' => $total_budget_amount * 0.30,
+        'mapped_ids' => [5, 7, 8]
+    ],
+    [
+        'category_name' => 'Savings (20%)',
+        'budget_amount' => $total_budget_amount * 0.20,
+        'mapped_ids' => [0]
+    ]
+];
+
+$budgets_remaining = [];
+foreach ($framework_targets as $index => $data) {
+    if ($index === 2) { // Savings
+        $spent = $total_budget_remaining < 0 ? 0 : $total_budget_remaining;
+    } else {
+        $ids_list = implode(',', $data['mapped_ids']);
+        $spent_query = mysqli_prepare($conn, "SELECT COALESCE(SUM(amount), 0) AS cat_spent FROM expenses WHERE user_id = ? AND category_id IN ($ids_list) AND expense_date >= ? AND expense_date <= ?");
+        mysqli_stmt_bind_param($spent_query, 'iss', $user_id, $from, $to);
+        mysqli_stmt_execute($spent_query);
+        $spent_res = mysqli_fetch_assoc(mysqli_stmt_get_result($spent_query));
+        $spent = (float)($spent_res['cat_spent'] ?? 0);
+    }
+    
+    $remaining = $data['budget_amount'] - $spent;
+    $budgets_remaining[] = [
+        'category_name' => $data['category_name'],
+        'budget_amount' => $data['budget_amount'],
+        'spent' => $spent,
+        'remaining' => $remaining,
+        'month' => date('F', strtotime($from)),
+        'year' => date('Y', strtotime($from))
+    ];
 }
 
 $monthly = get_monthly_income_expenses($conn, $user_id);
@@ -140,7 +175,7 @@ include __DIR__ . '/../includes/user_navbar.php';
     </div>
     <?php endif; ?>
 
-    <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div class="card rounded-2xl p-6">
             <h3 class="text-lg font-semibold mb-4 card-title">Income vs Expenses Trend</h3>
             <div class="chart-container"><canvas id="incomeExpenseChart"></canvas></div>
@@ -154,7 +189,7 @@ include __DIR__ . '/../includes/user_navbar.php';
     <div class="card rounded-2xl p-6">
         <h3 class="text-lg font-semibold mb-4 card-title">Monthly Savings</h3>
         <div class="chart-container" style="height:200px"><canvas id="monthlyComparisonChart"></canvas></div>
-    </div> -->
+    </div>
 </div>
 
 <?php
@@ -171,8 +206,18 @@ const monthlyExpenses = ' . json_encode($monthly['expenses']) . ';
 const savingsMonthly = ' . json_encode($savingsMonthly) . ';
 const catLabels = ' . json_encode($catLabels) . ';
 const catValues = ' . json_encode($catValues) . ';
-sfRegisterChart(new Chart(document.getElementById("incomeExpenseChart"), { type:"line", data:{ labels:monthlyLabels, datasets:[{label:"Income",data:monthlyIncome,borderColor:"#10b981",fill:true,tension:0.4},{label:"Expenses",data:monthlyExpenses,borderColor:"#ef4444",fill:true,tension:0.4}]}, options:sfChartOptions() }));
-sfRegisterChart(new Chart(document.getElementById("expenseBreakdownChart"), { type:"doughnut", data:{ labels:catLabels.length?catLabels:["No data"], datasets:[{data:catValues.length?catValues:[1],backgroundColor:["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6"]}]}, options:sfChartOptions({plugins:{legend:{position:"bottom"}},scales:{}}) }));
-sfRegisterChart(new Chart(document.getElementById("monthlyComparisonChart"), { type:"bar", data:{ labels:monthlyLabels, datasets:[{label:"Savings",data:savingsMonthly,backgroundColor:"#10b981"}]}, options:sfChartOptions() }));
+
+const el1 = document.getElementById("incomeExpenseChart");
+if (el1) {
+    sfRegisterChart(new Chart(el1, { type:"line", data:{ labels:monthlyLabels, datasets:[{label:"Income",data:monthlyIncome,borderColor:"#10b981",fill:true,tension:0.4},{label:"Expenses",data:monthlyExpenses,borderColor:"#ef4444",fill:true,tension:0.4}]}, options:sfChartOptions() }));
+}
+const el2 = document.getElementById("expenseBreakdownChart");
+if (el2) {
+    sfRegisterChart(new Chart(el2, { type:"doughnut", data:{ labels:catLabels.length?catLabels:["No data"], datasets:[{data:catValues.length?catValues:[1],backgroundColor:["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6"]}]}, options:sfChartOptions({plugins:{legend:{position:"bottom"}},scales:{}}) }));
+}
+const el3 = document.getElementById("monthlyComparisonChart");
+if (el3) {
+    sfRegisterChart(new Chart(el3, { type:"bar", data:{ labels:monthlyLabels, datasets:[{label:"Savings",data:savingsMonthly,backgroundColor:"#10b981"}]}, options:sfChartOptions() }));
+}
 </script>';
 include __DIR__ . '/../includes/layout_end.php';

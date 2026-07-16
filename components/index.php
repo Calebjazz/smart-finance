@@ -154,107 +154,127 @@ session_start();
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
             <!-- Income Tracking -->
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 hover:border-blue-500/50 transition-all duration-300 hover:transform hover:scale-105">
-                <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                    <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+            <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-emerald-500/50 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
+                <div>
+                    <div class="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-wallet text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Income Tracking</h3>
+                    <p class="text-gray-400 mb-6">
+                        Monitor all your income sources in one place. Track salary, investments, side hustles, and more with automatic categorization.
+                    </p>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-3">Income Tracking</h3>
-                <p class="text-gray-400 mb-4">
-                    Monitor all your income sources in one place. Track salary, investments, side hustles, and more with automatic categorization.
-                </p>
-                <ul class="text-gray-300 space-y-2">
+                <ul class="text-gray-300 space-y-2 border-t border-slate-700/50 pt-4">
                     <li class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span> Multiple income sources
+                        <span class="text-emerald-400 font-bold">✓</span> Multiple income sources
                     </li>
                     <li class="flex items-center gap-2">
-                        <span class="text-green-400">✓</span> Automatic categorization
+                        <span class="text-emerald-400 font-bold">✓</span> Automatic categorization
                     </li>
                 </ul>
             </div>
 
             <!-- Expense Tracking -->
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 hover:border-red-500/50 transition-all duration-300 hover:transform hover:scale-105">
-                <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                    <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                    </svg>
+            <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-rose-500/50 hover:shadow-[0_0_30px_-5px_rgba(239,68,68,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
+                <div>
+                    <div class="w-14 h-14 bg-rose-500/10 text-rose-400 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-credit-card text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Expense Tracking</h3>
+                    <p class="text-gray-400 mb-6">
+                        Track every expense with ease. Categorize spending, set limits, and get alerts when you're approaching budget limits.
+                    </p>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-3">Expense Tracking</h3>
-                <p class="text-gray-400 mb-4">
-                    Track every expense with ease. Categorize spending, set limits, and get alerts when you're approaching budget limits.
-                </p>
-                <ul class="text-gray-300 space-y-2">
+                <ul class="text-gray-300 space-y-2 border-t border-slate-700/50 pt-4">
                     <li class="flex items-center gap-2">
-                        <span class="text-red-400">✓</span> Smart categorization
+                        <span class="text-rose-400 font-bold">✓</span> Smart categorization
                     </li>
                     <li class="flex items-center gap-2">
-                        <span class="text-red-400">✓</span> Spending alerts
+                        <span class="text-rose-400 font-bold">✓</span> Spending alerts
                     </li>
                 </ul>
             </div>
 
             <!-- Automated Budgeting -->
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 hover:border-blue-500/50 transition-all duration-300 hover:transform hover:scale-105">
-                <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                    <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                    </svg>
+            <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-blue-500/50 hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
+                <div>
+                    <div class="w-14 h-14 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-pie text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Automated Budgeting</h3>
+                    <p class="text-gray-400 mb-6">
+                        Let AI create smart budgets based on your income and spending patterns. Adjust automatically as your life changes.
+                    </p>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-3">Automated Budgeting</h3>
-                <p class="text-gray-400 mb-4">
-                    Let AI create smart budgets based on your income and spending patterns. Adjust automatically as your life changes.
-                </p>
-                <ul class="text-gray-300 space-y-2">
+                <ul class="text-gray-300 space-y-2 border-t border-slate-700/50 pt-4">
                     <li class="flex items-center gap-2">
-                        <span class="text-blue-400">✓</span> AI-powered suggestions
+                        <span class="text-blue-400 font-bold">✓</span> AI-powered suggestions
                     </li>
                     <li class="flex items-center gap-2">
-                        <span class="text-blue-400">✓</span> Goal-based budgets
+                        <span class="text-blue-400 font-bold">✓</span> Goal-based budgets
                     </li>
                 </ul>
             </div>
 
             <!-- AI Financial Consultation -->
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 hover:border-cyan-500/50 transition-all duration-300 hover:transform hover:scale-105">
-                <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                    <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                    </svg>
+            <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-cyan-500/50 hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
+                <div>
+                    <div class="w-14 h-14 bg-cyan-500/10 text-cyan-400 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-robot text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">AI Consultation</h3>
+                    <p class="text-gray-400 mb-6">
+                        Get personalized financial advice powered by AI. Integrated with n8n for automated workflows and smart recommendations.
+                    </p>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-3">AI Financial Consultation</h3>
-                <p class="text-gray-400 mb-4">
-                    Get personalized financial advice powered by AI. Integrated with n8n for automated workflows and smart recommendations.
-                </p>
-                <ul class="text-gray-300 space-y-2">
+                <ul class="text-gray-300 space-y-2 border-t border-slate-700/50 pt-4">
                     <li class="flex items-center gap-2">
-                        <span class="text-cyan-400">✓</span> 24/7 AI assistant
+                        <span class="text-cyan-400 font-bold">✓</span> 24/7 AI assistant
                     </li>
-                
                     <li class="flex items-center gap-2">
-                        <span class="text-cyan-400">✓</span> Smart workflows
+                        <span class="text-cyan-400 font-bold">✓</span> Smart workflows
                     </li>
                 </ul>
             </div>
 
             <!-- Reports & Analytics -->
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 hover:border-yellow-500/50 transition-all duration-300 hover:transform hover:scale-105">
-                <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
-                    <svg class="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
+            <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-amber-500/50 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
+                <div>
+                    <div class="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Reports & Analytics</h3>
+                    <p class="text-gray-400 mb-6">
+                        Generate detailed financial reports and analytics. Visualize your financial health with charts and insights.
+                    </p>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-3">Reports</h3>
-                <p class="text-gray-400 mb-4">
-                    Generate detailed financial reports and analytics. Visualize your financial health with charts and insights.
-                </p>
-                <ul class="text-gray-300 space-y-2">
+                <ul class="text-gray-300 space-y-2 border-t border-slate-700/50 pt-4">
                     <li class="flex items-center gap-2">
-                        <span class="text-yellow-400">✓</span> Custom reports
+                        <span class="text-amber-400 font-bold">✓</span> Custom reports
                     </li>
                     <li class="flex items-center gap-2">
-                        <span class="text-yellow-400">✓</span> Export options
+                        <span class="text-amber-400 font-bold">✓</span> Export options
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Savings & Goals Tracking -->
+            <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-violet-500/50 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
+                <div>
+                    <div class="w-14 h-14 bg-violet-500/10 text-violet-400 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-piggy-bank text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Savings & Goals</h3>
+                    <p class="text-gray-400 mb-6">
+                        Define short and long-term savings goals. Track your deposits and monitor your milestones dynamically.
+                    </p>
+                </div>
+                <ul class="text-gray-300 space-y-2 border-t border-slate-700/50 pt-4">
+                    <li class="flex items-center gap-2">
+                        <span class="text-violet-400 font-bold">✓</span> Goal milestones
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="text-violet-400 font-bold">✓</span> Visual progress tracking
                     </li>
                 </ul>
             </div>

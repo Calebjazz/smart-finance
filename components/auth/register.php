@@ -188,6 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .glassmorphism {
             background: rgba(255, 255, 255, 0.1);
@@ -215,7 +216,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Smart<span class="text-blue-400">Finance</span>
             </h1>
             <p class="text-gray-300 mt-2">Create your account</p>
-        </div>ampp
+        </div>
 
         <!-- Glassmorphism Form -->
         <div class="glassmorphism-dark rounded-3xl p-8 shadow-2xl">

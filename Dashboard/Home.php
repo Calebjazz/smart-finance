@@ -76,7 +76,7 @@ include __DIR__ . '/../includes/user_navbar.php';
         </div>
     </div>
 
-    <!-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div class="card rounded-2xl p-6 lg:col-span-2">
             <h3 class="text-lg font-semibold mb-4 card-title">Monthly Spending</h3>
             <div class="chart-container"><canvas id="monthlySpendingChart"></canvas></div>
@@ -105,7 +105,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                 <?php endforeach; endif; ?>
             </div>
         </div>
-    </div> -->
+    </div>
 
     <?php if ($budget_total > 0): ?>
     <div class="card rounded-2xl p-6">
@@ -141,34 +141,43 @@ const monthlyExpenses = ' . json_encode($monthly['expenses']) . ';
 const catLabels = ' . json_encode($catLabels) . ';
 const catValues = ' . json_encode($catValues) . ';
 
-const c1 = new Chart(document.getElementById("incomeExpenseChart"), {
-    type: "line",
-    data: {
-        labels: monthlyLabels,
-        datasets: [
-            { label: "Income", data: monthlyIncome, borderColor: "#10b981", backgroundColor: "rgba(16,185,129,0.15)", fill: true, tension: 0.4 },
-            { label: "Expenses", data: monthlyExpenses, borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,0.15)", fill: true, tension: 0.4 }
-        ]
-    },
-    options: sfChartOptions()
-});
-sfRegisterChart(c1);
+const el1 = document.getElementById("incomeExpenseChart");
+if (el1) {
+    const c1 = new Chart(el1, {
+        type: "line",
+        data: {
+            labels: monthlyLabels,
+            datasets: [
+                { label: "Income", data: monthlyIncome, borderColor: "#10b981", backgroundColor: "rgba(16,185,129,0.15)", fill: true, tension: 0.4 },
+                { label: "Expenses", data: monthlyExpenses, borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,0.15)", fill: true, tension: 0.4 }
+            ]
+        },
+        options: sfChartOptions()
+    });
+    sfRegisterChart(c1);
+}
 
-const c2 = new Chart(document.getElementById("categoryChart"), {
-    type: "doughnut",
-    data: {
-        labels: catLabels.length ? catLabels : ["No data"],
-        datasets: [{ data: catValues.length ? catValues : [1], backgroundColor: ["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4"] }]
-    },
-    options: sfChartOptions({ plugins: { legend: { position: "bottom" } }, scales: {} })
-});
-sfRegisterChart(c2);
+const el2 = document.getElementById("categoryChart");
+if (el2) {
+    const c2 = new Chart(el2, {
+        type: "doughnut",
+        data: {
+            labels: catLabels.length ? catLabels : ["No data"],
+            datasets: [{ data: catValues.length ? catValues : [1], backgroundColor: ["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4"] }]
+        },
+        options: sfChartOptions({ plugins: { legend: { position: "bottom" } }, scales: {} })
+    });
+    sfRegisterChart(c2);
+}
 
-const c3 = new Chart(document.getElementById("monthlySpendingChart"), {
-    type: "bar",
-    data: { labels: monthlyLabels, datasets: [{ label: "Spending", data: monthlyExpenses, backgroundColor: "#3b82f6", borderRadius: 8 }] },
-    options: sfChartOptions()
-});
-sfRegisterChart(c3);
+const el3 = document.getElementById("monthlySpendingChart");
+if (el3) {
+    const c3 = new Chart(el3, {
+        type: "bar",
+        data: { labels: monthlyLabels, datasets: [{ label: "Spending", data: monthlyExpenses, backgroundColor: "#3b82f6", borderRadius: 8 }] },
+        options: sfChartOptions()
+    });
+    sfRegisterChart(c3);
+}
 </script>';
 include __DIR__ . '/../includes/layout_end.php';

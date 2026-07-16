@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $transactions = get_savings_transactions($conn, $user_id);
-$all_tx = get_recent_transactions($conn, $user_id, 50);
-$total_deposits = 0;
-$total_withdrawals = 0;
+$all_tx = get_recent_transactions($conn, $user_id, 1000);
+$total_deposits = get_total_income($conn, $user_id);
+$total_withdrawals = get_total_expenses($conn, $user_id);
 foreach ($transactions as $t) {
     if ($t['type'] === 'deposit') $total_deposits += (float)$t['amount'];
     else $total_withdrawals += (float)$t['amount'];
@@ -62,10 +62,6 @@ include __DIR__ . '/../includes/user_navbar.php';
 
     <?php if ($message): ?><div class="alert-success rounded-xl p-4 mb-4"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
     <?php if ($error): ?><div class="alert-error rounded-xl p-4 mb-4"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
-
-    <div class="mb-6">
-        <button type="button" onclick="document.getElementById('addTxModal').classList.remove('hidden')" class="gradient-blue text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2"><i class="fas fa-plus"></i> Add Savings Transaction</button>
-    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Total Deposits</p><p class="text-2xl font-bold text-green-500"><?php echo format_tsh($total_deposits); ?></p></div>
@@ -95,25 +91,6 @@ include __DIR__ . '/../includes/user_navbar.php';
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
-
-<div id="addTxModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-    <div class="modal-panel rounded-2xl p-6 w-full max-w-md">
-        <h3 class="text-xl font-bold mb-6 card-title">Add Savings Transaction</h3>
-        <form method="POST" class="space-y-4">
-            <input type="hidden" name="action" value="add">
-            <div><label class="block text-sm mb-2 card-text">Type *</label>
-                <select name="type" class="form-select w-full rounded-xl px-4 py-3"><option value="deposit">Deposit</option><option value="withdrawal">Withdrawal</option></select>
-            </div>
-            <div><label class="block text-sm mb-2 card-text">Reference *</label><input type="text" name="reference" required class="form-input w-full rounded-xl px-4 py-3" placeholder="Transaction reference"></div>
-            <div><label class="block text-sm mb-2 card-text">Amount (Tsh) *</label><input type="number" name="amount" step="0.01" min="0.01" required class="form-input w-full rounded-xl px-4 py-3"></div>
-            <div><label class="block text-sm mb-2 card-text">Status *</label>
-                <select name="status" class="form-select w-full rounded-xl px-4 py-3"><option value="active">Active</option><option value="completed">Completed</option></select>
-            </div>
-            <div><label class="block text-sm mb-2 card-text">Date *</label><input type="date" name="transaction_date" required value="<?php echo date('Y-m-d'); ?>" class="form-input w-full rounded-xl px-4 py-3"></div>
-            <button type="submit" class="w-full gradient-blue text-white py-3 rounded-xl font-medium">Save Transaction</button>
-        </form>
     </div>
 </div>
 
