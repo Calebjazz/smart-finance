@@ -275,18 +275,15 @@ function get_expenses_by_category(mysqli $conn, int $user_id): array
 function get_recent_transactions(mysqli $conn, int $user_id, int $limit = 8): array
 {
     $stmt = mysqli_prepare($conn, "
-        (SELECT 'income' AS type, i.title AS label, i.amount, i.income_date AS tx_date, ic.category_name
+        (SELECT 'income' AS type, i.id AS source_id, i.title AS label, i.amount, i.income_date AS tx_date, ic.category_name
          FROM incomes i JOIN income_categories ic ON ic.id = i.category_id WHERE i.user_id = ?)
         UNION ALL
-        (SELECT 'expense' AS type, COALESCE(e.description, ec.category_name) AS label, e.amount, e.expense_date AS tx_date, ec.category_name
+        (SELECT 'expense' AS type, e.id AS source_id, COALESCE(e.description, ec.category_name) AS label, e.amount, e.expense_date AS tx_date, ec.category_name
          FROM expenses e JOIN expense_categories ec ON ec.id = e.category_id WHERE e.user_id = ?)
-        UNION ALL
-        (SELECT CONCAT('savings_', st.type) AS type, st.REFERENCE AS label, st.amount, st.transaction_date AS tx_date, st.type AS category_name
-         FROM savings_transactions st WHERE st.user_id = ?)
         ORDER BY tx_date DESC, label ASC
         LIMIT ?
     ");
-    mysqli_stmt_bind_param($stmt, 'iiii', $user_id, $user_id, $user_id, $limit);
+    mysqli_stmt_bind_param($stmt, 'iii', $user_id, $user_id, $limit);
     mysqli_stmt_execute($stmt);
     return mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
 }

@@ -25,8 +25,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($action === 'delete') {
         $id = (int) ($_POST['id'] ?? 0);
+
+        // Reassign all dependent records to a fallback category before deleting.
+        // The fallback is always a different category from the one being deleted.
+        // If no other category exists, we create one ('Other') on the fly.
+        if ($type === 'income') {
+            $fallback = get_income_fallback_category($conn, $id);
+            if ($fallback === null) {
+                // No other category exists → create one
+                mysqli_query($conn, "INSERT INTO income_categories (category_name) VALUES ('Other')");
+                $fallback = (int) mysqli_insert_id($conn);
+            }
+            // Reassign incomes
+            $stmt = mysqli_prepare($conn, "UPDATE incomes SET category_id = ? WHERE category_id = ?");
+            mysqli_stmt_bind_param($stmt, 'ii', $fallback, $id);
+            mysqli_stmt_execute($stmt);
+        } else {
+            $fallback = get_expense_fallback_category($conn, $id);
+            if ($fallback === null) {
+                // No other category exists → create one
+                mysqli_query($conn, "INSERT INTO expense_categories (category_name) VALUES ('Other')");
+                $fallback = (int) mysqli_insert_id($conn);
+            }
+            // Reassign expenses
+            $stmt = mysqli_prepare($conn, "UPDATE expenses SET category_id = ? WHERE category_id = ?");
+            mysqli_stmt_bind_param($stmt, 'ii', $fallback, $id);
+            mysqli_stmt_execute($stmt);
+
+            // Reassign budgets
+            $stmt = mysqli_prepare($conn, "UPDATE budgets SET category_id = ? WHERE category_id = ?");
+            mysqli_stmt_bind_param($stmt, 'ii', $fallback, $id);
+            mysqli_stmt_execute($stmt);
+
+            // Reassign budget_items
+            $stmt = mysqli_prepare($conn, "UPDATE budget_items SET category_id = ? WHERE category_id = ?");
+            mysqli_stmt_bind_param($stmt, 'ii', $fallback, $id);
+            mysqli_stmt_execute($stmt);
+        }
+
+        // Now safe to delete
         mysqli_query($conn, "DELETE FROM $table WHERE id = $id");
-        $message = 'Category deleted.';
+        $message = 'Category deleted. Dependent records were reassigned.';
     }
 }
 
@@ -49,6 +88,7 @@ include __DIR__ . '/../includes/admin_navbar.php';
     </div>
 
     <?php if ($message): ?><div class="alert-success rounded-xl p-4 mb-4"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert-danger rounded-xl p-4 mb-4"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="card rounded-2xl p-6">
@@ -62,7 +102,7 @@ include __DIR__ . '/../includes/admin_navbar.php';
                 <?php foreach ($income_cats as $c): ?>
                 <li class="flex justify-between items-center sub-card rounded-lg px-3 py-2">
                     <span class="card-title"><?php echo htmlspecialchars($c['category_name']); ?></span>
-                    <form method="POST" onsubmit="return confirm('Delete?');"><input type="hidden" name="action" value="delete"><input type="hidden" name="type" value="income"><input type="hidden" name="id" value="<?php echo (int)$c['id']; ?>"><button type="submit" class="text-red-500 text-sm"><i class="fas fa-trash"></i></button></form>
+                    <form method="POST" onsubmit="return confirm('Delete this income category? Any existing incomes using it will be reassigned to \'Other\'.');"><input type="hidden" name="action" value="delete"><input type="hidden" name="type" value="income"><input type="hidden" name="id" value="<?php echo (int)$c['id']; ?>"><button type="submit" class="text-red-500 text-sm"><i class="fas fa-trash"></i></button></form>
                 </li>
                 <?php endforeach; ?>
             </ul>
@@ -79,7 +119,7 @@ include __DIR__ . '/../includes/admin_navbar.php';
                 <?php foreach ($expense_cats as $c): ?>
                 <li class="flex justify-between items-center sub-card rounded-lg px-3 py-2">
                     <span class="card-title"><?php echo htmlspecialchars($c['category_name']); ?></span>
-                    <form method="POST" onsubmit="return confirm('Delete?');"><input type="hidden" name="action" value="delete"><input type="hidden" name="type" value="expense"><input type="hidden" name="id" value="<?php echo (int)$c['id']; ?>"><button type="submit" class="text-red-500 text-sm"><i class="fas fa-trash"></i></button></form>
+                    <form method="POST" onsubmit="return confirm('Delete this expense category? Any existing expenses or budgets using it will be reassigned to \'Other\'.');"><input type="hidden" name="action" value="delete"><input type="hidden" name="type" value="expense"><input type="hidden" name="id" value="<?php echo (int)$c['id']; ?>"><button type="submit" class="text-red-500 text-sm"><i class="fas fa-trash"></i></button></form>
                 </li>
                 <?php endforeach; ?>
             </ul>
@@ -87,4 +127,40 @@ include __DIR__ . '/../includes/admin_navbar.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/layout_end.php'; ?>
+<?php
+/**
+ * Find a fallback income category ("Other" or the first available) that
+ * is NOT the category being deleted. Returns null if no other category exists.
+ */
+function get_income_fallback_category(mysqli $conn, int $exclude_id): ?int
+{
+    $result = mysqli_query($conn, "SELECT id FROM income_categories WHERE LOWER(category_name) = 'other' AND id != $exclude_id LIMIT 1");
+    if ($row = mysqli_fetch_assoc($result)) {
+        return (int) $row['id'];
+    }
+    // Fall back to the first different category if "Other" doesn't exist or is the one being deleted
+    $result = mysqli_query($conn, "SELECT id FROM income_categories WHERE id != $exclude_id ORDER BY id ASC LIMIT 1");
+    if ($row = mysqli_fetch_assoc($result)) {
+        return (int) $row['id'];
+    }
+    return null;
+}
+
+/**
+ * Find a fallback expense category ("Other" or the first available) that
+ * is NOT the category being deleted. Returns null if no other category exists.
+ */
+function get_expense_fallback_category(mysqli $conn, int $exclude_id): ?int
+{
+    $result = mysqli_query($conn, "SELECT id FROM expense_categories WHERE LOWER(category_name) = 'other' AND id != $exclude_id LIMIT 1");
+    if ($row = mysqli_fetch_assoc($result)) {
+        return (int) $row['id'];
+    }
+    // Fall back to the first different category if "Other" doesn't exist or is the one being deleted
+    $result = mysqli_query($conn, "SELECT id FROM expense_categories WHERE id != $exclude_id ORDER BY id ASC LIMIT 1");
+    if ($row = mysqli_fetch_assoc($result)) {
+        return (int) $row['id'];
+    }
+    return null;
+}
+?>

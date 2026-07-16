@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../includes/init.php';
 require_admin();
 
+global $conn;
+
 $admin_name = htmlspecialchars($_SESSION['full_name'] ?? 'Admin');
 $stats = get_admin_stats($conn);
 $activities = get_admin_recent_activity($conn);
@@ -54,7 +56,7 @@ include __DIR__ . '/../includes/admin_navbar.php';
         <div class="card rounded-2xl p-6"><p class="text-sm card-text">Automation Logs</p><p class="text-2xl font-bold card-title"><?php echo $stats['automations']; ?></p></div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div class="card rounded-2xl p-6">
             <h3 class="text-lg font-semibold mb-4 card-title">User Growth</h3>
             <div class="chart-container"><canvas id="userGrowthChart"></canvas></div>
@@ -63,7 +65,7 @@ include __DIR__ . '/../includes/admin_navbar.php';
             <h3 class="text-lg font-semibold mb-4 card-title">Transaction Volume</h3>
             <div class="chart-container"><canvas id="transactionChart"></canvas></div>
         </div>
-    </div>
+    </div> -->
 
     <div class="card rounded-2xl p-6">
         <h3 class="text-lg font-semibold mb-6 card-title">Recent Activity</h3>
@@ -89,4 +91,4 @@ $page_scripts = '<script>
 sfRegisterChart(new Chart(document.getElementById("userGrowthChart"), { type:"line", data:{ labels:' . json_encode($labels) . ', datasets:[{label:"New Users",data:' . json_encode($user_growth) . ',borderColor:"#3b82f6",fill:true,tension:0.4}]}, options:sfChartOptions() }));
 sfRegisterChart(new Chart(document.getElementById("transactionChart"), { type:"bar", data:{ labels:' . json_encode($labels) . ', datasets:[{label:"Transactions",data:' . json_encode($tx_volume) . ',backgroundColor:"#10b981"}]}, options:sfChartOptions() }));
 </script>';
-include __DIR__ . '/../includes/layout_end.php';
+

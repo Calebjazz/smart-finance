@@ -1,14 +1,15 @@
 <?php
-session_start();
-
 // Configure secure session cookies before any output
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path'     => '/',
-    'secure'   => true,
-    'httponly' => true,
-    'samesite' => 'Lax',
-]);
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    session_start();
+}
 
 // Generate / refresh CSRF token for this session
 if (empty($_SESSION['csrf_token'])) {

@@ -2,6 +2,11 @@
 require_once __DIR__ . '/../includes/init.php';
 require_login();
 
+global $conn;
+if (!isset($conn)) {
+    die('Database connection failed.');
+}
+
 $user_id = (int) $_SESSION['user_id'];
 $user_name = htmlspecialchars($_SESSION['full_name'] ?? 'User');
 $message = '';
@@ -9,40 +14,31 @@ $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    if ($action === 'add') {
-        $amount = (float) ($_POST['amount'] ?? 0);
-        $type = $_POST['type'] ?? 'deposit';
-        $reference = trim($_POST['reference'] ?? '');
-        $transaction_date = $_POST['transaction_date'] ?? date('Y-m-d');
-        $status = $_POST['status'] ?? 'active';
-        if ($amount > 0 && $reference && in_array($type, ['deposit', 'withdrawal'])) {
-            $stmt = mysqli_prepare($conn, "INSERT INTO savings_transactions (user_id, amount, status, type, REFERENCE, transaction_date) VALUES (?, ?, ?, ?, ?, ?)");
-            mysqli_stmt_bind_param($stmt, 'idssss', $user_id, $amount, $status, $type, $reference, $transaction_date);
-            if (mysqli_stmt_execute($stmt)) {
-                $message = 'Transaction recorded.';
-            } else {
-                $error = 'Failed to save transaction.';
-            }
-        } else {
-            $error = 'Please fill all required fields.';
-        }
-    } elseif ($action === 'delete') {
+    if ($action === 'delete') {
         $id = (int) ($_POST['id'] ?? 0);
-        $stmt = mysqli_prepare($conn, "DELETE FROM savings_transactions WHERE id = ? AND user_id = ?");
-        mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
-        mysqli_stmt_execute($stmt);
-        $message = 'Transaction deleted.';
+        $source = $_POST['source'] ?? '';
+        if ($source === 'income') {
+            $stmt = mysqli_prepare($conn, "DELETE FROM incomes WHERE id = ? AND user_id = ?");
+        } elseif ($source === 'expense') {
+            $stmt = mysqli_prepare($conn, "DELETE FROM expenses WHERE id = ? AND user_id = ?");
+        } else {
+            $error = 'Invalid transaction source.';
+        }
+        if (isset($stmt)) {
+            mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
+            mysqli_stmt_execute($stmt);
+            if (mysqli_stmt_affected_rows($conn) > 0) {
+                $message = 'Transaction deleted.';
+            } else {
+                $error = 'Transaction not found or already deleted.';
+            }
+        }
     }
 }
 
-$transactions = get_savings_transactions($conn, $user_id);
 $all_tx = get_recent_transactions($conn, $user_id, 1000);
 $total_deposits = get_total_income($conn, $user_id);
 $total_withdrawals = get_total_expenses($conn, $user_id);
-foreach ($transactions as $t) {
-    if ($t['type'] === 'deposit') $total_deposits += (float)$t['amount'];
-    else $total_withdrawals += (float)$t['amount'];
-}
 
 $page_title = 'Transactions';
 $active_page = 'transactions';
@@ -73,12 +69,13 @@ include __DIR__ . '/../includes/user_navbar.php';
         <h3 class="text-lg font-semibold mb-4 card-title">All Transactions</h3>
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead><tr class="text-left text-sm border-b table-head"><th class="pb-3">Description</th><th class="pb-3">Type</th><th class="pb-3">Category</th><th class="pb-3">Amount</th><th class="pb-3">Date</th></tr></thead>
+                <thead><tr class="text-left text-sm border-b table-head"><th class="pb-3">Description</th><th class="pb-3">Type</th><th class="pb-3">Category</th><th class="pb-3">Amount</th><th class="pb-3">Date</th><th class="pb-3">Actions</th></tr></thead>
                 <tbody>
                     <?php if (empty($all_tx)): ?>
-                    <tr><td colspan="5" class="py-6 text-center card-text">No transactions yet.</td></tr>
+                    <tr><td colspan="6" class="py-6 text-center card-text">No transactions yet.</td></tr>
                     <?php else: foreach ($all_tx as $tx):
                         $isCredit = str_contains($tx['type'], 'income') || str_contains($tx['type'], 'deposit');
+                        $source = str_contains($tx['type'], 'income') ? 'income' : 'expense';
                     ?>
                     <tr class="border-b table-row">
                         <td class="py-4 card-title"><?php echo htmlspecialchars($tx['label']); ?></td>
@@ -86,6 +83,14 @@ include __DIR__ . '/../includes/user_navbar.php';
                         <td class="py-4 card-text"><?php echo htmlspecialchars($tx['category_name'] ?? '-'); ?></td>
                         <td class="py-4 font-medium <?php echo $isCredit ? 'text-green-500' : 'text-red-500'; ?>"><?php echo ($isCredit ? '+' : '-') . format_tsh((float)$tx['amount']); ?></td>
                         <td class="py-4 card-text"><?php echo date('M j, Y', strtotime($tx['tx_date'])); ?></td>
+                        <td class="py-4">
+                            <form method="POST" class="inline" onsubmit="return confirm('Delete this transaction?');">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="id" value="<?php echo (int)$tx['source_id']; ?>">
+                                <input type="hidden" name="source" value="<?php echo $source; ?>">
+                                <button type="submit" class="text-red-500 hover:text-red-400"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
                     </tr>
                     <?php endforeach; endif; ?>
                 </tbody>
@@ -94,4 +99,4 @@ include __DIR__ . '/../includes/user_navbar.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/layout_end.php'; ?>
+

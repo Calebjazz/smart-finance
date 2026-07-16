@@ -2,12 +2,18 @@
 require_once __DIR__ . '/../includes/init.php';
 require_admin();
 
+// Ensure $conn is available. If init.php didn't provide it, try a sensible default for local XAMPP.
+if (!isset($conn) || !$conn) {
+    $conn = mysqli_connect('localhost', 'root', '', 'smart_finance');
+}
+
 $admin_name = htmlspecialchars($_SESSION['full_name'] ?? 'Admin');
-$logs = mysqli_fetch_all(mysqli_query($conn, "
+$result = mysqli_query($conn, "
     SELECT ac.*, u.full_name FROM ai_consultations ac
     LEFT JOIN users u ON u.id = ac.user_id
     ORDER BY ac.created_at DESC LIMIT 100
-"), MYSQLI_ASSOC);
+");
+$logs = $result ? mysqli_fetch_all($result, MYSQLI_ASSOC) : [];
 
 $page_title = 'AI Logs';
 $active_page = 'ai_logs';
@@ -43,4 +49,3 @@ include __DIR__ . '/../includes/admin_navbar.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/layout_end.php'; ?>

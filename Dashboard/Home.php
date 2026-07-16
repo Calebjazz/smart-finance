@@ -180,4 +180,4 @@ if (el3) {
     sfRegisterChart(c3);
 }
 </script>';
-include __DIR__ . '/../includes/layout_end.php';
+

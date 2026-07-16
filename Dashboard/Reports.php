@@ -220,4 +220,4 @@ if (el3) {
     sfRegisterChart(new Chart(el3, { type:"bar", data:{ labels:monthlyLabels, datasets:[{label:"Savings",data:savingsMonthly,backgroundColor:"#10b981"}]}, options:sfChartOptions() }));
 }
 </script>';
-include __DIR__ . '/../includes/layout_end.php';
+

@@ -137,4 +137,3 @@ include __DIR__ . '/../includes/user_navbar.php';
        
 </div>
 
-<?php include __DIR__ . '/../includes/layout_end.php'; ?>

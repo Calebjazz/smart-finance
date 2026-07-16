@@ -96,4 +96,4 @@ include __DIR__ . '/../includes/admin_navbar.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/layout_end.php'; ?>
+

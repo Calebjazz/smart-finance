@@ -28,7 +28,7 @@ include __DIR__ . '/../includes/admin_navbar.php';
     <div class="card rounded-2xl p-6">
         <div class="space-y-3">
             <?php if (empty($logs)): ?>
-            <p class="card-text">No automation logs yet. Connect n8n to <code class="text-sm">api/n8n_webhook.php</code></p>
+            <p class="card-text">No automation logs yet.</p>
             <?php else: foreach ($logs as $log): ?>
             <div class="flex items-start gap-4 p-4 sub-card rounded-xl">
                 <div class="w-10 h-10 rounded-full flex items-center justify-center <?php echo $log['status'] === 'success' ? 'bg-green-500/20' : 'bg-red-500/20'; ?>">
@@ -46,4 +46,3 @@ include __DIR__ . '/../includes/admin_navbar.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/layout_end.php'; ?>
