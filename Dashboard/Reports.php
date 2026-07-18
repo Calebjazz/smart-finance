@@ -213,7 +213,7 @@ if (el1) {
 }
 const el2 = document.getElementById("expenseBreakdownChart");
 if (el2) {
-    sfRegisterChart(new Chart(el2, { type:"doughnut", data:{ labels:catLabels.length?catLabels:["No data"], datasets:[{data:catValues.length?catValues:[1],backgroundColor:["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6"]}]}, options:sfChartOptions({plugins:{legend:{position:"bottom"}},scales:{}}) }));
+    sfRegisterChart(new Chart(el2, { type:"doughnut", data:{ labels:catLabels.length?catLabels:["No data"], datasets:[{data:catValues.length?catValues:[1],backgroundColor:["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6"]}]}, options:sfChartOptions({plugins:{legend:{position:"bottom"}}}) }));
 }
 const el3 = document.getElementById("monthlyComparisonChart");
 if (el3) {
@@ -221,3 +221,5 @@ if (el3) {
 }
 </script>';
 
+// CRITICAL FIX: Prints the page scripts layout framework setup
+include __DIR__ . '/../includes/layout_end.php';

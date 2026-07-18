@@ -138,7 +138,7 @@ include __DIR__ . '/../includes/user_navbar.php';
                                 <span><?php echo $cat_group_id === 3 ? 'Saved: ' : 'Used: '; ?><?php echo format_tsh($cat_spent); ?></span>
                                 <span><?php echo $pct; ?>%</span>
                             </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-slate-700">
                                 <div class="<?php echo $bar_color; ?> h-2 rounded-full transition-all duration-500" style="width: <?php echo $pct; ?>%"></div>
                             </div>
                         </td>
@@ -149,5 +149,10 @@ include __DIR__ . '/../includes/user_navbar.php';
         </div>
     </div>
 </div>
+
+<?php
+// CRITICAL FIX: Prints the page scripts layout framework setup
+include __DIR__ . '/../includes/layout_end.php';
+?>
 
 

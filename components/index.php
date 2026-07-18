@@ -264,9 +264,9 @@ session_start();
                     <div class="w-14 h-14 bg-violet-500/10 text-violet-400 rounded-xl flex items-center justify-center mb-6">
                         <i class="fas fa-piggy-bank text-2xl"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-3">Savings & Goals</h3>
+                    <h3 class="text-2xl font-bold text-white mb-3">Savings</h3>
                     <p class="text-gray-400 mb-6">
-                        Define short and long-term savings goals. Track your deposits and monitor your milestones dynamically.
+                    Saving goals. Track your deposits and monitor your milestones dynamically.
                     </p>
                 </div>
                 <ul class="text-gray-300 space-y-2 border-t border-slate-700/50 pt-4">

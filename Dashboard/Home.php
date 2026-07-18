@@ -33,7 +33,6 @@ include __DIR__ . '/../includes/head.php';
 include __DIR__ . '/../includes/user_sidebar.php';
 include __DIR__ . '/../includes/user_navbar.php';
 ?>
-
 <div class="p-6">
     <div class="mb-8">
         <h1 class="text-3xl font-bold mb-2 card-title">Hi, <?php echo $user_name; ?></h1>
@@ -62,7 +61,6 @@ include __DIR__ . '/../includes/user_navbar.php';
             <p class="text-sm mb-1 card-text">Total Expenses</p>
             <p class="text-2xl font-bold card-title"><?php echo format_tsh($total_expenses); ?></p>
         </div>
-        
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -119,11 +117,11 @@ include __DIR__ . '/../includes/user_navbar.php';
                 <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-green-500 h-2 rounded-full" style="width:50%"></div></div>
             </div>
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Wants (30%)</div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Wants (30%)</span></div>
                 <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-green-500 h-2 rounded-full" style="width:30%"></div></div>
             </div>
             <div class="sub-card rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Savings (20%)</div>
+                <div class="flex items-center justify-between mb-2"><span class="text-sm card-text">Savings (20%)</span></div>
                 <div class="w-full bg-gray-300 rounded-full h-2 dark:bg-slate-700"><div class="bg-green-500 h-2 rounded-full" style="width:20%"></div></div>
             </div>
         </div>
@@ -134,50 +132,68 @@ include __DIR__ . '/../includes/user_navbar.php';
 <?php
 $catLabels = array_column($category_data, 'category_name');
 $catValues = array_map(fn($r) => (float)$r['total'], $category_data);
+
 $page_scripts = '<script>
-const monthlyLabels = ' . json_encode($monthly['labels']) . ';
-const monthlyIncome = ' . json_encode($monthly['income']) . ';
-const monthlyExpenses = ' . json_encode($monthly['expenses']) . ';
+const monthlyLabels = ' . json_encode($monthly['labels'] ?? []) . ';
+const monthlyIncome = ' . json_encode($monthly['income'] ?? []) . ';
+const monthlyExpenses = ' . json_encode($monthly['expenses'] ?? []) . ';
 const catLabels = ' . json_encode($catLabels) . ';
 const catValues = ' . json_encode($catValues) . ';
 
+// 1. Income vs Expenses
 const el1 = document.getElementById("incomeExpenseChart");
 if (el1) {
-    const c1 = new Chart(el1, {
+    new Chart(el1, {
         type: "line",
         data: {
             labels: monthlyLabels,
-            datasets: [
-                { label: "Income", data: monthlyIncome, borderColor: "#10b981", backgroundColor: "rgba(16,185,129,0.15)", fill: true, tension: 0.4 },
-                { label: "Expenses", data: monthlyExpenses, borderColor: "#ef4444", backgroundColor: "rgba(239,68,68,0.15)", fill: true, tension: 0.4 }
-            ]
+           datasets: [{
+    label: "Income",
+    data: monthlyIncome.length ? monthlyIncome : [0],
+    borderColor: "#10b981",
+    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    fill: true,
+    tension: 0.4
+}, {
+    label: "Expenses",
+    data: monthlyExpenses.length ? monthlyExpenses : [0],
+    borderColor: "#ef4444",
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    fill: true,
+    tension: 0.4
+}]
         },
-        options: sfChartOptions()
+        options: { responsive: true, maintainAspectRatio: false }
     });
-    sfRegisterChart(c1);
 }
 
+// 2. Expenses by Category
 const el2 = document.getElementById("categoryChart");
 if (el2) {
-    const c2 = new Chart(el2, {
+    new Chart(el2, {
         type: "doughnut",
         data: {
             labels: catLabels.length ? catLabels : ["No data"],
             datasets: [{ data: catValues.length ? catValues : [1], backgroundColor: ["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6","#06b6d4"] }]
         },
-        options: sfChartOptions({ plugins: { legend: { position: "bottom" } }, scales: {} })
+        options: { responsive: true, plugins: { legend: { position: "bottom" } } }
     });
-    sfRegisterChart(c2);
 }
 
+// 3. Monthly Spending
 const el3 = document.getElementById("monthlySpendingChart");
 if (el3) {
-    const c3 = new Chart(el3, {
+    new Chart(el3, {
         type: "bar",
-        data: { labels: monthlyLabels, datasets: [{ label: "Spending", data: monthlyExpenses, backgroundColor: "#3b82f6", borderRadius: 8 }] },
-        options: sfChartOptions()
+        data: { 
+            labels: monthlyLabels, 
+            datasets: [{ label: "Spending", data: monthlyExpenses, backgroundColor: "#3b82f6", borderRadius: 8 }] 
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
-    sfRegisterChart(c3);
 }
 </script>';
 
+// CRITICAL FIX: Prints the page scripts layout framework setup
+include __DIR__ . '/../includes/layout_end.php';
+?>

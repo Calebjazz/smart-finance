@@ -19,9 +19,9 @@ $include_chart = $include_chart ?? false;
     <script>
         try { if (localStorage.getItem('smartfinance_theme') === 'dark') document.documentElement.classList.add('dark-mode'); } catch(e){}
     </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <?php if ($include_chart): ?>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <?php endif; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo $asset_path; ?>/css/app.css">

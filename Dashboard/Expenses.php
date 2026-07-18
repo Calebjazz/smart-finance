@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 // Switched path to webhook-test for active screen logging
-                $ch = curl_init("http://localhost:5678/webhook-test/2189377c-a4fa-49e6-8468-7ca449650003");
+                $ch = curl_init("http://localhost:5678/webhook/2189377c-a4fa-49e6-8468-7ca449650003");
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
