@@ -157,15 +157,12 @@ CREATE TABLE IF NOT EXISTS savings_transactions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- =========================================
--- INSERT DATA
--- =========================================
+
+-- INSERT DATA TO DATABASE
 
 INSERT IGNORE INTO users (full_name, email, phone, password, role, status) VALUES
 ('System Admin', 'admin@smartfinance.com', '0717902752', '$2y$10$2BTr4lWwsmmGBLV.85rxIOWDy.tbrZRTy.2nk0TPGkc5VDQDyD3e6', 'admin', 'active'),
 
-
--- Default password for all seeded accounts: admin123
 
 INSERT IGNORE INTO income_categories (category_name, description) VALUES
 ('Salary', 'Regular employment income'),

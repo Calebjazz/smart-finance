@@ -156,7 +156,7 @@ session_start();
             <!-- Income Tracking -->
             <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-emerald-500/50 hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
                 <div>
-                    <div class="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center mb-6">
+                    <div class="w-14 h-14 bg-emerald-500/10 text-blue-400 rounded-xl flex items-center justify-center mb-6">
                         <i class="fas fa-wallet text-2xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-3">Income Tracking</h3>
@@ -177,7 +177,7 @@ session_start();
             <!-- Expense Tracking -->
             <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-rose-500/50 hover:shadow-[0_0_30px_-5px_rgba(239,68,68,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
                 <div>
-                    <div class="w-14 h-14 bg-rose-500/10 text-rose-400 rounded-xl flex items-center justify-center mb-6">
+                    <div class="w-14 h-14 bg-rose-500/10 text-blue-400 rounded-xl flex items-center justify-center mb-6">
                         <i class="fas fa-credit-card text-2xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-3">Expense Tracking</h3>
@@ -219,7 +219,7 @@ session_start();
             <!-- AI Financial Consultation -->
             <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-cyan-500/50 hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
                 <div>
-                    <div class="w-14 h-14 bg-cyan-500/10 text-cyan-400 rounded-xl flex items-center justify-center mb-6">
+                    <div class="w-14 h-14 bg-cyan-500/10 text-blue-400 rounded-xl flex items-center justify-center mb-6">
                         <i class="fas fa-robot text-2xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-3">AI Consultation</h3>
@@ -232,7 +232,7 @@ session_start();
                         <span class="text-cyan-400 font-bold">✓</span> 24/7 AI assistant
                     </li>
                     <li class="flex items-center gap-2">
-                        <span class="text-cyan-400 font-bold">✓</span> Smart workflows
+                        <span class="text--400 fobluent-bold">✓</span> Smart workflows
                     </li>
                 </ul>
             </div>
@@ -240,7 +240,7 @@ session_start();
             <!-- Reports & Analytics -->
             <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-amber-500/50 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
                 <div>
-                    <div class="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center mb-6">
+                    <div class="w-14 h-14 bg-amber-500/10 text-blue-400 rounded-xl flex items-center justify-center mb-6">
                         <i class="fas fa-chart-line text-2xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-3">Reports & Analytics</h3>
@@ -261,7 +261,7 @@ session_start();
             <!-- Savings & Goals Tracking -->
             <div class="bg-slate-800/40 backdrop-blur-md rounded-2xl p-8 border border-slate-800 hover:border-violet-500/50 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.2)] transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between h-full">
                 <div>
-                    <div class="w-14 h-14 bg-violet-500/10 text-violet-400 rounded-xl flex items-center justify-center mb-6">
+                    <div class="w-14 h-14 bg-violet-500/10 text-blue-400 rounded-xl flex items-center justify-center mb-6">
                         <i class="fas fa-piggy-bank text-2xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-3">Savings</h3>
