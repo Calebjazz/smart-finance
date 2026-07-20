@@ -111,8 +111,8 @@ session_start();
 
                     <div>
                         <p class="text-white font-semibold">Active Users</p>
-                        <h3 class="text-blue-400 text-3xl font-bold mt-2">5000+</h3>
-                        <p class="text-gray-400">Nationalwide</p>
+                        <h3 class="text-blue-400 text-3xl font-bold mt-2">500+</h3>
+                        <p class="text-gray-400">Currently</p>
                     </div>
 
                     <div>
@@ -426,7 +426,7 @@ session_start();
         <div class="flex items-center justify-center gap-4">
             <a href="auth/register.php"
                 class="bg-white text-blue-600 px-8 py-4 rounded-full font-bold hover:bg-gray-100 transition shadow-lg transform hover:scale-105 transition-all duration-200">
-                Get Started Free
+                Get Started
             </a>
             <a href="#"
                 class="border-2 border-white text-white px-8 py-4 rounded-full font-bold hover:bg-white/10 transition">
@@ -449,10 +449,10 @@ session_start();
             <div>
                 <h4 class="font-bold mb-4">Quick Links</h4>
                 <ul class="space-y-2 text-gray-400">
-                    <li><a href="#" class="hover:text-blue-400 transition">Home</a></li>
-                    <li><a href="#" class="hover:text-blue-400 transition">About Us</a></li>
-                    <li><a href="#text-center mb-16" class="hover:text-blue-400 transition">Services</a></li>
-                    <li><a href="#" class="hover:text-blue-400 transition">Contact</a></li>
+                    <li><a href="./auth/login.php" class="hover:text-blue-400 transition">Home</a></li>
+                    <li class="hover:text-blue-400">About Us</li>
+                    <li class="hover:text-blue-400">Services</li>
+                    <li class="hover:text-blue-400">Contact</li>
                 </ul>
             </div>
             <div>

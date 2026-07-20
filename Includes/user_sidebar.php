@@ -16,7 +16,7 @@ $nav = [
 <aside id="sidebar" class="sidebar fixed left-0 top-0 h-full w-64 z-50">
     <div class="flex flex-col h-full">
         <div class="p-6 border-b border-slate-700">
-            <h1 class="text-xl font-bold flex items-center gap-2">
+            <h1 class="text-xl font-bold flex items-center">
                 <i class="fas fa-wallet logo-pocket"></i>
                 <span class="logo-smart">Smart</span><span class="logo-finance">Finance</span>
             </h1>

@@ -148,10 +148,21 @@ include __DIR__ . '/../includes/user_navbar.php';
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <?php foreach ($budgets_remaining as $br):
-                $pct = $br['budget_amount'] > 0
-                    ? round(((float) $br['spent'] / (float) $br['budget_amount']) * 100)
-                    : 0;
+                $spent = (float) $br['spent'];
+                $limit = (float) $br['budget_amount'];
+                $pct = $limit > 0 ? round(($spent / $limit) * 100) : 0;
                 $pct = max(0, min(100, $pct));
+                
+                // Color based on percentage spent (like Budget.php)
+                $bar_color = 'bg-green-500';
+                if (($spent / $limit) >= 1.0) {
+                    $bar_color = 'bg-rose-600';
+                } elseif (($spent / $limit) >= 0.90) {
+                    $bar_color = 'bg-amber-500';
+                } elseif (($spent / $limit) >= 0.75) {
+                    $bar_color = 'bg-yellow-400';
+                }
+                
                 $remainingClass = ((float) $br['remaining']) < 0
                     ? 'text-red-500'
                     : (((float) $br['remaining']) < ((float) $br['budget_amount']) * 0.2
@@ -166,9 +177,12 @@ include __DIR__ . '/../includes/user_navbar.php';
                 <p class="text-xl font-bold <?php echo $remainingClass; ?>"><?php echo format_tsh((float) $br['remaining']); ?></p>
                 <p class="text-xs card-text mt-1">of <?php echo format_tsh((float) $br['budget_amount']); ?> budget</p>
                 <div class="w-full bg-gray-300 rounded-full h-2 mt-2 dark:bg-slate-700">
-                    <div class="<?php echo ((float)$br['remaining'] < 0) ? 'bg-red-500' : 'bg-blue-500'; ?> h-2 rounded-full" style="width:<?php echo $pct; ?>%"></div>
+                    <div class="<?php echo $bar_color; ?> h-2 rounded-full" style="width:<?php echo $pct; ?>%"></div>
                 </div>
-                <p class="text-xs card-text mt-1"><?php echo $pct; ?>% spent</p>
+                <div class="flex items-center justify-between text-xs card-text mt-1">
+                    <span><?php echo format_tsh($spent); ?> spent</span>
+                    <span><?php echo $pct; ?>%</span>
+                </div>
             </div>
             <?php endforeach; ?>
         </div>

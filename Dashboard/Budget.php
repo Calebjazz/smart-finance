@@ -22,13 +22,13 @@ $total_budget = (float)($income_res['total_income'] ?? 0);
 // 2. AUTOMATIC 50/30/20 ALLOCATION ENGINE: Map your unique database categories
 $framework_targets = [
     1 => [
-        'name' => 'Needs (Essential Bills | Rent | Food | Health | Transport)', 
+        'name' => 'Needs', 
         'ratio' => 0.50, 
         'limit' => $total_budget * 0.50,
         'mapped_ids' => [1, 2, 3, 4, 6] // Housing, Food, Transport, Utilities, Healthcare
     ],
     2 => [
-        'name' => 'Wants (Entertainment | Leisure | Education | Misc)', 
+        'name' => 'Wants', 
         'ratio' => 0.30, 
         'limit' => $total_budget * 0.30,
         'mapped_ids' => [5, 7, 8] // Entertainment, Education, Other
@@ -70,7 +70,7 @@ include __DIR__ . '/../includes/user_navbar.php';
     <!-- Macro Metrics Panels -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="card rounded-2xl p-6 bg-white shadow-sm border border-gray-100">
-            <p class="text-sm font-medium text-gray-400">Total Budget (From Income)</p>
+            <p class="text-sm font-medium text-gray-400">Total Budget</p>
             <p class="text-2xl font-bold text-gray-800 mt-1"><?php echo format_tsh($total_budget); ?></p>
         </div>
         <div class="card rounded-2xl p-6 bg-white shadow-sm border border-gray-100">
@@ -78,7 +78,7 @@ include __DIR__ . '/../includes/user_navbar.php';
             <p class="text-2xl font-bold text-rose-500 mt-1">- <?php echo format_tsh($month_expenses); ?></p>
         </div>
         <div class="card rounded-2xl p-6 bg-white shadow-sm border border-gray-100">
-            <p class="text-sm font-medium text-gray-400">Remaining Framework Balance</p>
+            <p class="text-sm font-medium text-gray-400">Remaining Balance</p>
             <p class="text-2xl font-bold <?php echo $remaining_balance >= 0 ? 'text-green-500' : 'text-rose-600'; ?> mt-1">
                 <?php echo format_tsh($remaining_balance); ?>
             </p>

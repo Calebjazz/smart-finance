@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($stmt)) {
             mysqli_stmt_bind_param($stmt, 'ii', $id, $user_id);
             mysqli_stmt_execute($stmt);
-            if (mysqli_stmt_affected_rows($conn) > 0) {
+            if (mysqli_stmt_affected_rows($stmt) > 0) {
                 $message = 'Transaction deleted.';
             } else {
                 $error = 'Transaction not found or already deleted.';
