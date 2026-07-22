@@ -155,19 +155,25 @@ include __DIR__ . '/../includes/user_navbar.php';
                 
                 // Color based on percentage spent (like Budget.php)
                 $bar_color = 'bg-green-500';
-                if (($spent / $limit) >= 1.0) {
-                    $bar_color = 'bg-rose-600';
-                } elseif (($spent / $limit) >= 0.90) {
-                    $bar_color = 'bg-amber-500';
-                } elseif (($spent / $limit) >= 0.75) {
-                    $bar_color = 'bg-yellow-400';
-                }
-                
-                $remainingClass = ((float) $br['remaining']) < 0
-                    ? 'text-red-500'
-                    : (((float) $br['remaining']) < ((float) $br['budget_amount']) * 0.2
-                        ? 'text-yellow-500'
-                        : 'text-green-500');
+
+if ($limit > 0) {
+
+    $ratio = $spent / $limit;
+
+    if ($ratio >= 1.0) {
+        $bar_color = 'bg-rose-600';
+    } elseif ($ratio >= 0.90) {
+        $bar_color = 'bg-amber-500';
+    } elseif ($ratio >= 0.75) {
+        $bar_color = 'bg-yellow-400';
+    }
+
+} else {
+
+    // No budget allocated
+    $bar_color = 'bg-gray-400';
+
+}
             ?>
             <div class="sub-card rounded-xl p-4">
                 <div class="flex items-center justify-between mb-2">
