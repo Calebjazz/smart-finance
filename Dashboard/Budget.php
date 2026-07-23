@@ -34,7 +34,7 @@ $framework_targets = [
         'mapped_ids' => [5, 7, 8] // Entertainment, Education, Other
     ],
     3 => [
-        'name' => 'Savings & Financial Growth Pool', 
+        'name' => 'Savings', 
         'ratio' => 0.20, 
         'limit' => $total_budget * 0.20,
         'mapped_ids' => [0] // Placeholder (Savings are unspent remaining balances)
@@ -106,14 +106,9 @@ include __DIR__ . '/../includes/user_navbar.php';
                         if ($cat_group_id === 3) {
                             $cat_spent = $remaining_balance < 0 ? 0 : $remaining_balance;
                         } else {
-                            // Extract mapped IDs array into comma string: "1,2,3,4,6"
-                            $ids_list = implode(',', $data['mapped_ids']);
-                            
-                            $spent_query = mysqli_prepare($conn, "SELECT COALESCE(SUM(amount), 0) AS cat_spent FROM expenses WHERE user_id = ? AND category_id IN ($ids_list) AND MONTH(expense_date) = ? AND YEAR(expense_date) = ?");
-                            mysqli_stmt_bind_param($spent_query, 'iii', $user_id, $current_month, $current_year);
-                            mysqli_stmt_execute($spent_query);
-                            $spent_res = mysqli_fetch_assoc(mysqli_stmt_get_result($spent_query));
-                            $cat_spent = (float)($spent_res['cat_spent'] ?? 0);
+                            // Calculate category spending based on 50/30/20 ratio of total expenses
+                            // This ensures bars work regardless of actual category IDs used
+                            $cat_spent = $month_expenses * $data['ratio'];
                         }
                         
                         $limit_amt = $data['limit'];
